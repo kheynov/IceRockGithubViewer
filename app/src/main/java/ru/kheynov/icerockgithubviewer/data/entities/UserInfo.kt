@@ -1,5 +1,9 @@
 package ru.kheynov.icerockgithubviewer.data.entities
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class UserInfo(
-    val name: String,
+    val login: String,
+    val id: Int,
 )
