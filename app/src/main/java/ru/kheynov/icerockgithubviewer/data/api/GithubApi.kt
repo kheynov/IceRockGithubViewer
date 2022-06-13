@@ -1,5 +1,6 @@
 package ru.kheynov.icerockgithubviewer.data.api
 
+import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.Path
@@ -14,20 +15,20 @@ interface GithubApi {
     @GET("user")
     suspend fun getUserInfo(
         @Header("Authorization") authHeader: String,
-    ): UserInfo
+    ): Response<UserInfo>
 
     @GET("users/{userName}/repos")
     suspend fun getRepositoriesList(
         @Path("userName") userName: String,
         @Header("Authorization") authHeader: String,
-    ): List<Repo>
+    ): Response<List<Repo>>
 
     @GET("repos/{owner}/{repoName}")
     suspend fun getRepositoryDetails(
         @Path("owner") ownerName: String,
         @Path("repoName") repoName: String,
         @Header("Authorization") authHeader: String,
-    ): RepoDetails
+    ): Response<RepoDetails>
 
     @GET("repos/{owner}/{repoName}/readme")
     suspend fun getRepositoryReadme(
@@ -35,5 +36,5 @@ interface GithubApi {
         @Path("repoName") repoName: String,
         @Query("ref") branchName: String,
         @Header("Authorization") authHeader: String,
-    ): RepoReadme
+    ): Response<RepoReadme>
 }
