@@ -8,4 +8,5 @@ data class Repo(
     val id: Int,
     val owner: UserInfo,
     val description: String?,
+    val language: String
 )
