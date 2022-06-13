@@ -13,6 +13,7 @@ import kotlinx.coroutines.launch
 import ru.kheynov.icerockgithubviewer.TestToken
 import ru.kheynov.icerockgithubviewer.databinding.FragmentAuthBinding
 import ru.kheynov.icerockgithubviewer.presentation.screens.auth.AuthViewModel.Action
+import ru.kheynov.icerockgithubviewer.utils.ErrorType
 
 @AndroidEntryPoint
 class AuthFragment : Fragment() {
@@ -31,14 +32,15 @@ class AuthFragment : Fragment() {
             when (state) {
                 AuthViewModel.State.Loading -> binding.statusTextView.text = "Loading"
                 AuthViewModel.State.Idle -> binding.statusTextView.text = "Idle"
-                else -> {
-                    binding.statusTextView.text = "Error"
+                AuthViewModel.State.InvalidInput -> {
+                    binding.statusTextView.text = "Invalid token"
                 }
             }
         }
 
         binding.signInButton.setOnClickListener {
-            viewModel.onSignInButtonPressed(TestToken.token)
+            viewModel.enterToken(TestToken.token)
+            viewModel.onSignInButtonPressed()
         }
 
         return binding.root
@@ -58,11 +60,19 @@ class AuthFragment : Fragment() {
                 Toast.LENGTH_SHORT
             ).show()
 
-            is Action.ShowError -> Toast.makeText(
-                context,
-                "Error: ${action.message}",
-                Toast.LENGTH_SHORT
-            ).show()
+            is Action.ShowError -> {
+
+                if (action.error == ErrorType.NetworkError) {
+                    Toast.makeText(context, "Network error", Toast.LENGTH_SHORT).show()
+                } else {
+                    Toast.makeText(
+                        context,
+                        "HTTP Error: ${action.message}",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+
+            }
         }
     }
 }

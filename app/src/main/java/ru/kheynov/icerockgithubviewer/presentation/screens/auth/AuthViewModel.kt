@@ -11,6 +11,7 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.receiveAsFlow
 import ru.kheynov.icerockgithubviewer.data.repository.AppRepository
+import ru.kheynov.icerockgithubviewer.utils.ErrorType
 import javax.inject.Inject
 
 @HiltViewModel
@@ -30,35 +31,49 @@ class AuthViewModel @Inject constructor(val repository: AppRepository) : ViewMod
     sealed interface State {
         object Idle : State
         object Loading : State
-        data class InvalidInput(val reason: String) : State
+        object InvalidInput : State
     }
 
-    sealed interface Action {
-        data class ShowError(val message: String?) : Action
-        object RouteToMain : Action
+    sealed class Action {
+        data class ShowError(val error: ErrorType, val message: String? = null) : Action()
+        object RouteToMain : Action()
     }
 
     private val exceptionHandler = CoroutineExceptionHandler { _, throwable ->
-        viewModelScope.launch { _actions.send(Action.ShowError(throwable.localizedMessage)) }
+        viewModelScope.launch {
+            _actions.send(
+                Action.ShowError(
+                    error = ErrorType.NetworkError,
+                    message = throwable.localizedMessage
+                )
+            )
+        }
     }
 
-    fun onSignInButtonPressed(token: String) {
+    fun onSignInButtonPressed() {
         signInJob = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             _state.postValue(State.Loading)
-            val response = repository.signIn(token)
+            val response = repository.signIn(_token.value.toString())
             withContext(Dispatchers.Main) {
                 if (response.isSuccessful) {
                     _state.postValue(State.Idle)
                     _actions.send(Action.RouteToMain)
                 } else {
-                    if (response.code() == 401){
-                        _state.postValue(State.InvalidInput("Invalid GitHub token "))
+                    if (response.code() == 401) {
+                        _state.postValue(State.InvalidInput)
+                    }else{
+                        Log.i("MainActivity", "Response code: ${response.code()}")
+                        _actions.send(
+                            Action.ShowError(error = ErrorType.HttpError)
+                        )
                     }
-                    Log.i("MainActivity", "Response code: ${response.code()}")
-                    _actions.send(Action.ShowError("Invalid GitHub Token"))
                 }
             }
         }
+    }
+
+    fun enterToken(token: String) {
+        _token.value = token
     }
 
     override fun onCleared() {
