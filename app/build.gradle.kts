@@ -3,7 +3,7 @@ plugins {
     id("org.jetbrains.kotlin.android")
     id("dagger.hilt.android.plugin")
     kotlin("kapt")
-    kotlin("plugin.serialization") version "1.6.21"
+    id("kotlinx-serialization")
 
 }
 
@@ -55,8 +55,8 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-livedata-core-ktx:2.4.1")
 
     // Hilt
-    kapt("com.google.dagger:hilt-android-compiler:2.40.1")
-    implementation("com.google.dagger:hilt-android:2.40.1")
+    kapt("com.google.dagger:hilt-android-compiler:2.42")
+    implementation("com.google.dagger:hilt-android:2.42")
 
     // Testing
     testImplementation("junit:junit:4.13.2")
@@ -73,14 +73,14 @@ dependencies {
 
     // Retrofit
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
-    implementation("com.squareup.retrofit2:converter-scalars:2.9.0")
-    implementation("com.google.code.gson:gson:2.9.0")
-    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation("com.squareup.okhttp3:okhttp:5.0.0-alpha.2")
 
     // Coroutines
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.2")
 
     // Serialization
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-core:1.3.2")
+    implementation("com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:0.8.0")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.2")
 
     // Navigation
