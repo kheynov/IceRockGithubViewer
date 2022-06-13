@@ -23,15 +23,19 @@ class KeyValueStorage @Inject constructor(@ApplicationContext context: Context) 
 
     var authToken: String? = null
         set(value) {
-            field = value
-            saveToPreferences(value, AUTH_TOKEN)
+            if (field != value) {
+                field = value
+                saveToPreferences(value, AUTH_TOKEN)
+            }
         }
         get() = getFromPreferences(AUTH_TOKEN)
 
     var userName: String? = null
         set(value) {
-            field = value
-            saveToPreferences(value, USERNAME)
+            if (field != value) {
+                field = value
+                saveToPreferences(value, USERNAME)
+            }
         }
         get() = getFromPreferences(USERNAME)
 
