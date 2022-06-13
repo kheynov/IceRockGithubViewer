@@ -46,3 +46,4 @@ google-services.json
 
 # Android Profiling
 *.hprof
+/app/src/main/java/ru/kheynov/icerockgithubviewer/TestToken.kt

@@ -4,6 +4,7 @@ plugins {
     id("dagger.hilt.android.plugin")
     kotlin("kapt")
     id("kotlinx-serialization")
+    id("androidx.navigation.safeargs.kotlin")
 
 }
 

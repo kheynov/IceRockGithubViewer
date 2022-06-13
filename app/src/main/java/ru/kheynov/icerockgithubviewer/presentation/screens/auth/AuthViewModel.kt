@@ -42,7 +42,7 @@ class AuthViewModel @Inject constructor(val repository: AppRepository) : ViewMod
         viewModelScope.launch { _actions.send(Action.ShowError(throwable.localizedMessage)) }
     }
 
-    private fun onSignInButtonPressed(token: String) {
+    fun onSignInButtonPressed(token: String) {
         signInJob = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             _state.postValue(State.Loading)
             val response = repository.signIn(token)
@@ -51,8 +51,11 @@ class AuthViewModel @Inject constructor(val repository: AppRepository) : ViewMod
                     _state.postValue(State.Idle)
                     _actions.send(Action.RouteToMain)
                 } else {
+                    if (response.code() == 401){
+                        _state.postValue(State.InvalidInput("Invalid GitHub token "))
+                    }
                     Log.i("MainActivity", "Response code: ${response.code()}")
-                    _actions.send(Action.ShowError("Error: ${response.code()}"))
+                    _actions.send(Action.ShowError("Invalid GitHub Token"))
                 }
             }
         }
