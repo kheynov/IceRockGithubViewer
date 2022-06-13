@@ -2,4 +2,7 @@
     <string name="app_name">IceRockGithubViewer</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="auth_nav_label">Auth screen</string>
+    <string name="detail_info_nav_label">Detail Info Screen</string>
+    <string name="repositories_list_nav_label">Repositories List Screen</string>
 </resources>
