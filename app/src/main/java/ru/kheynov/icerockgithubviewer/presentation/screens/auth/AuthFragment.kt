@@ -13,11 +13,14 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import ru.kheynov.icerockgithubviewer.BuildConfig
 import ru.kheynov.icerockgithubviewer.R
 import ru.kheynov.icerockgithubviewer.databinding.FragmentAuthBinding
 import ru.kheynov.icerockgithubviewer.presentation.screens.auth.AuthViewModel.Action
 import ru.kheynov.icerockgithubviewer.presentation.screens.auth.AuthViewModel.State.Loading
 import ru.kheynov.icerockgithubviewer.utils.ErrorType
+
+private const val TAG = "AuthFragment"
 
 @AndroidEntryPoint
 class AuthFragment : Fragment() {
@@ -69,7 +72,7 @@ class AuthFragment : Fragment() {
             ).show()
 
             is Action.ShowError -> {
-                Log.i("AuthFragment", action.message.toString())
+                if (BuildConfig.DEBUG) Log.i(TAG, action.message.toString())
                 if (action.error == ErrorType.NetworkError) {
                     Toast.makeText(context, "Network error", Toast.LENGTH_SHORT).show()
                 }
