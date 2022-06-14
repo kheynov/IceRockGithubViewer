@@ -9,4 +9,5 @@
     <string name="ice_rock_logo_content_description">Ice Rock Logo</string>
     <string name="sign_in_button_label">sign in</string>
     <string name="error_message">Invalid token</string>
+    <string name="log_out_menu_title">Log out</string>
 </resources>

@@ -15,4 +15,8 @@
     <style name="Button.Green" parent="ThemeOverlay.AppCompat">
         <item name="colorAccent">@color/accent</item>
     </style>
+
+    <style name="RepositoriesActionBar" parent="@android:style/Widget.Holo.Light.ActionBar">
+        <item name="android:background">@color/status_bar</item>
+    </style>
 </resources>

@@ -1,8 +1,8 @@
 <resources>
     <!-- Base application theme. -->
-    <style name="Theme.IceRockGithubViewer" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+    <style name="Theme.IceRockGithubViewer" parent="Theme.MaterialComponents.Light.DarkActionBar">
         <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/secondary</item>
+        <item name="colorPrimary">@color/status_bar</item>
         <item name="colorPrimaryVariant">@color/secondary</item>
         <item name="colorOnPrimary">@color/white</item>
         <!-- Secondary brand color. -->
@@ -11,6 +11,7 @@
         <item name="colorOnSecondary">@color/black</item>
         <!-- Status bar color. -->
         <item name="android:statusBarColor" >@color/status_bar</item>
+        <item name="android:actionBarStyle">@style/RepositoriesActionBar</item>
         <!-- Customize your theme here. -->
     </style>
 </resources>
