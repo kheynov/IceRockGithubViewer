@@ -7,7 +7,6 @@ import android.view.View
 import android.view.View.INVISIBLE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -21,7 +20,6 @@ import ru.kheynov.icerockgithubviewer.R
 import ru.kheynov.icerockgithubviewer.databinding.FragmentAuthBinding
 import ru.kheynov.icerockgithubviewer.presentation.screens.auth.AuthViewModel.Action
 import ru.kheynov.icerockgithubviewer.presentation.screens.auth.AuthViewModel.State.Loading
-import ru.kheynov.icerockgithubviewer.utils.ErrorType
 
 private const val TAG = "AuthFragment"
 
@@ -49,7 +47,6 @@ class AuthFragment : Fragment() {
                     R.string
                         .error_message
                 ) else ""
-
         }
 
         binding.signInButton.setOnClickListener {
@@ -84,8 +81,14 @@ class AuthFragment : Fragment() {
 
             is Action.ShowError -> {
                 if (BuildConfig.DEBUG) Log.i(TAG, action.message.toString())
-                if (action.error == ErrorType.NetworkError) {
-                    Toast.makeText(context, "Network error", Toast.LENGTH_SHORT).show()
+                val errorDialogFragment = ErrorDialogFragment.create(
+                    error = action.error,
+                    code = action.HttpCode
+                )
+                activity?.supportFragmentManager?.let {
+                    errorDialogFragment.show(
+                        it, getString(R.string.error)
+                    )
                 }
             }
         }

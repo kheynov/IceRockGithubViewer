@@ -10,4 +10,9 @@
     <string name="sign_in_button_label">sign in</string>
     <string name="error_message">Invalid token</string>
     <string name="log_out_menu_title">Log out</string>
+    <string name="network_error">Network error. Check your internet connection.</string>
+    <string name="http_error_code">"HTTP error / code: %s \nInformation for developers"</string>
+    <string name="error">Error</string>
+    <string name="ok">OK</string>
+    <string name="error_logo">Error logo</string>
 </resources>
