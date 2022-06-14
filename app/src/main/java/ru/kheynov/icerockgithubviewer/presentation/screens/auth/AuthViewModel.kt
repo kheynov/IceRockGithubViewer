@@ -49,7 +49,11 @@ class AuthViewModel @Inject constructor(
     }
 
     sealed interface Action {
-        data class ShowError(val error: ErrorType, val message: String? = null) : Action
+        data class ShowError(
+            val error: ErrorType, val message: String? = null,
+            val HttpCode: Int? = null
+        ) : Action
+
         object RouteToMain : Action
     }
 
@@ -80,9 +84,10 @@ class AuthViewModel @Inject constructor(
                         _actions.send(
                             Action.ShowError(
                                 error = ErrorType.HttpError,
-                                message = response.code().toString()
+                                HttpCode = response.code()
                             )
                         )
+                        _state.postValue(State.Idle)
                     }
                 }
             }

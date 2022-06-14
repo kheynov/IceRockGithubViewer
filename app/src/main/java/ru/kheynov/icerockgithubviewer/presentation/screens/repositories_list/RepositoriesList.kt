@@ -40,9 +40,9 @@ class RepositoriesList : Fragment() {
         }
         navController = Navigation.findNavController(view)
 
-        binding.repositoriesListLabel.setOnClickListener {
+        /*binding.repositoriesListLabel.setOnClickListener {
             navController.navigate(R.id.action_repositoriesListFragment_to_detailFragment)
-        }
+        }*/
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
