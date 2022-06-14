@@ -5,4 +5,8 @@
     <string name="auth_nav_label">Auth screen</string>
     <string name="detail_info_nav_label">Detail Info Screen</string>
     <string name="repositories_list_nav_label">Repositories List Screen</string>
+    <string name="personal_access_token_hint">Personal access token</string>
+    <string name="ice_rock_logo_content_description">Ice Rock Logo</string>
+    <string name="sign_in_button_label">sign in</string>
+    <string name="error_message">Invalid token</string>
 </resources>

@@ -34,9 +34,9 @@ class AuthViewModel @Inject constructor(val repository: AppRepository) : ViewMod
         object InvalidInput : State
     }
 
-    sealed class Action {
-        data class ShowError(val error: ErrorType, val message: String? = null) : Action()
-        object RouteToMain : Action()
+    sealed interface Action {
+        data class ShowError(val error: ErrorType, val message: String? = null) : Action
+        object RouteToMain : Action
     }
 
     private val exceptionHandler = CoroutineExceptionHandler { _, throwable ->
