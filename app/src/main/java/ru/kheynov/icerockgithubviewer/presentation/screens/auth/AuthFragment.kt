@@ -8,9 +8,12 @@ import android.view.View.INVISIBLE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.NavController
+import androidx.navigation.Navigation
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import ru.kheynov.icerockgithubviewer.BuildConfig
@@ -24,6 +27,8 @@ private const val TAG = "AuthFragment"
 
 @AndroidEntryPoint
 class AuthFragment : Fragment() {
+
+    private lateinit var navController: NavController
 
     private lateinit var binding: FragmentAuthBinding
 
@@ -58,6 +63,11 @@ class AuthFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        // Hiding action bar for auth screen
+        (requireActivity() as AppCompatActivity).supportActionBar?.hideOffset
+
+        navController = Navigation.findNavController(view)
+
         binding.authInputText.setText(viewModel.token.value ?: "")
         lifecycleScope.launch {
             viewModel.actions.collect { handleAction(it) }
@@ -66,10 +76,9 @@ class AuthFragment : Fragment() {
 
     private fun handleAction(action: Action) {
         when (action) {
-            is Action.RouteToMain -> Toast.makeText(
-                context, "Routing to main !",
-                Toast.LENGTH_SHORT
-            ).show()
+            is Action.RouteToMain -> {
+                navController.navigate(R.id.action_authFragment_to_repositoriesListFragment)
+            }
 
             is Action.ShowError -> {
                 if (BuildConfig.DEBUG) Log.i(TAG, action.message.toString())
