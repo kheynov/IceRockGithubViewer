@@ -15,13 +15,24 @@ import ru.kheynov.icerockgithubviewer.utils.ErrorType
 import javax.inject.Inject
 
 @HiltViewModel
-class AuthViewModel @Inject constructor(val repository: AppRepository) : ViewModel() {
+class AuthViewModel @Inject constructor(
+    private val repository: AppRepository,
+) : ViewModel() {
 
     private val _token = MutableLiveData<String>()
+    val token: LiveData<String>
+        get() = _token
+
 
     private val _state = MutableLiveData<State>()
     val state: LiveData<State>
         get() = _state
+
+    init {
+        if (repository.getToken() != null) {
+            _token.value = repository.getToken()
+        }
+    }
 
     private val _actions: Channel<Action> = Channel(Channel.BUFFERED)
     val actions: Flow<Action> = _actions.receiveAsFlow()
@@ -61,7 +72,7 @@ class AuthViewModel @Inject constructor(val repository: AppRepository) : ViewMod
                 } else {
                     if (response.code() == 401) {
                         _state.postValue(State.InvalidInput)
-                    }else{
+                    } else {
                         Log.i("MainActivity", "Response code: ${response.code()}")
                         _actions.send(
                             Action.ShowError(error = ErrorType.HttpError)

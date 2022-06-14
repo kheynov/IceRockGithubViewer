@@ -55,6 +55,7 @@ class AuthFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        binding.authInputText.setText(viewModel.token.value ?: "")
         lifecycleScope.launch {
             viewModel.actions.collect { handleAction(it) }
         }

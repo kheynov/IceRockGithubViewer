@@ -20,6 +20,9 @@ class AppRepository @Inject constructor(
         userName = keyValueStorage.userName!!
     )
 
+    fun getUserName() = keyValueStorage.userName
+
+    fun getToken() = keyValueStorage.authToken
 
     suspend fun getRepository(repoId: String): Response<RepoDetails> = githubApi
         .getRepositoryDetails(
