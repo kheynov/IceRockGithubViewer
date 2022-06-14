@@ -22,7 +22,7 @@ class AppRepository @Inject constructor(
 
 
     suspend fun getRepository(repoId: String): Response<RepoDetails> = githubApi
-    .getRepositoryDetails(
+        .getRepositoryDetails(
             ownerName = keyValueStorage.userName!!,
             repoName = repoId,
             authHeader = "Bearer ${keyValueStorage.authToken}",
@@ -34,22 +34,21 @@ class AppRepository @Inject constructor(
         repositoryName: String,
         branchName: String,
     ): Response<RepoReadme> = githubApi.getRepositoryReadme(
-            ownerName,
-            repositoryName,
-            branchName,
-            authHeader = "Bearer ${keyValueStorage.authToken}"
-        )
+        ownerName,
+        repositoryName,
+        branchName,
+        authHeader = "Bearer ${keyValueStorage.authToken}"
+    )
 
 
     suspend fun signIn(token: String): Response<UserInfo> {
-        keyValueStorage.authToken = token
         val res = githubApi.getUserInfo(
-            authHeader = "Bearer ${
-                keyValueStorage
-                    .authToken
-            }"
+            authHeader = "Bearer $token"
         )
-        keyValueStorage.userName = res.body()?.login
+        if (res.isSuccessful) {
+            keyValueStorage.authToken = token
+            keyValueStorage.userName = res.body()?.login
+        }
         return res
     }
 }
