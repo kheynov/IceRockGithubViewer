@@ -76,12 +76,12 @@ class AuthViewModel @Inject constructor(
                     if (response.code() == 401) {
                         _state.postValue(State.InvalidInput)
                     } else {
-                        if (BuildConfig.DEBUG) Log.i(
-                            TAG,
-                            "Response code: ${response.code()}"
-                        )
+                        if (BuildConfig.DEBUG) Log.i(TAG, "Response code: ${response.code()}")
                         _actions.send(
-                            Action.ShowError(error = ErrorType.HttpError)
+                            Action.ShowError(
+                                error = ErrorType.HttpError,
+                                message = response.code().toString()
+                            )
                         )
                     }
                 }

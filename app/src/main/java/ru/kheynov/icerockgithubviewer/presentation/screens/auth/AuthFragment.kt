@@ -64,7 +64,9 @@ class AuthFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         // Hiding action bar for auth screen
-        (requireActivity() as AppCompatActivity).supportActionBar?.hideOffset
+        (requireActivity() as AppCompatActivity).supportActionBar?.apply {
+            hide()
+        }
 
         navController = Navigation.findNavController(view)
 
