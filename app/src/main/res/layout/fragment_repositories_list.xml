@@ -6,7 +6,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background"
-    tools:context=".presentation.screens.repositories_list.RepositoriesList">
+    tools:context=".presentation.screens.repositories_list.RepositoriesListFragment">
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/repositories_list_recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:listitem="@layout/repositories_list_item" />
 
     <com.google.android.material.progressindicator.CircularProgressIndicator
         android:layout_width="56dp"
