@@ -14,33 +14,19 @@ import ru.kheynov.icerockgithubviewer.utils.ErrorType
 class ErrorDialogFragment(private val error: ErrorType, private val code: Int?) : DialogFragment() {
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         return activity?.let {
-            val builder = AlertDialog.Builder(it)
             val binding = DialogErrorBinding.inflate(layoutInflater, null, false)
 
-            binding.errorDialogDescription.text =
-                if (error == ErrorType.NetworkError) getString(R.string.network_error)
-                else getString(R.string.http_error_code, code)
+            binding.apply {
+                errorDialogDescription.text =
+                    if (error == ErrorType.NetworkError) getString(R.string.network_error)
+                    else getString(R.string.http_error_code, code)
 
-            binding.errorDialogButton.setOnClickListener {
-                dialog?.cancel()
+                errorDialogButton.setOnClickListener {
+                    dialog?.cancel()
+                }
             }
-
-            builder.setView(binding.root)
-
-            builder.create()
+            AlertDialog.Builder(it).setView(binding.root).create()
         } ?: throw IllegalStateException("Activity cannot be null")
-    }
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        val binding = DialogErrorBinding.inflate(inflater, container, false)
-
-        binding.errorDialogDescription.text = "Network error check your internet connection"
-
-        return binding.root
     }
 
     companion object {
