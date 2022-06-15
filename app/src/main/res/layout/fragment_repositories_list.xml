@@ -12,6 +12,7 @@
         android:layout_width="56dp"
         android:layout_height="56dp"
         android:layout_gravity="center"
+        android:id="@+id/repositories_list_loading_pb"
         android:elevation="10dp"
         android:indeterminate="true"
         android:visibility="invisible"
@@ -22,7 +23,7 @@
         android:id="@+id/repositories_list_error_screen"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:visibility="visible">
+        android:visibility="invisible">
 
         <ImageView
             android:id="@+id/repositories_list_error_image"

@@ -6,9 +6,11 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
+import dagger.hilt.android.AndroidEntryPoint
 import ru.kheynov.icerockgithubviewer.R
 import ru.kheynov.icerockgithubviewer.databinding.FragmentDetailInfoBinding
 
+@AndroidEntryPoint
 class DetailInfoFragment : Fragment() {
 
     private lateinit var navController: NavController

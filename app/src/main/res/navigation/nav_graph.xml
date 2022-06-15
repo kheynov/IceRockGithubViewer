@@ -17,7 +17,7 @@
 
     <fragment
         android:id="@+id/repositoriesListFragment"
-        android:name="ru.kheynov.icerockgithubviewer.presentation.screens.repositories_list.RepositoriesList"
+        android:name="ru.kheynov.icerockgithubviewer.presentation.screens.repositories_list.RepositoriesListFragment"
         android:label="@string/repositories_list_nav_label"
         tools:layout="@layout/fragment_repositories_list">
         <action

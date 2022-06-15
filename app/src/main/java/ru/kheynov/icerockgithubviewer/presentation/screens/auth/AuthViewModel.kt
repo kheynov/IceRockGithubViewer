@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.receiveAsFlow
 import ru.kheynov.icerockgithubviewer.BuildConfig
 import ru.kheynov.icerockgithubviewer.data.repository.AppRepository
-import ru.kheynov.icerockgithubviewer.utils.ErrorType
+import ru.kheynov.icerockgithubviewer.utils.AuthError
 import javax.inject.Inject
 
 private const val TAG = "AuthViewModel"
@@ -50,7 +50,7 @@ class AuthViewModel @Inject constructor(
 
     sealed interface Action {
         data class ShowError(
-            val error: ErrorType, val message: String? = null,
+            val error: AuthError, val message: String? = null,
             val HttpCode: Int? = null
         ) : Action
 
@@ -61,7 +61,7 @@ class AuthViewModel @Inject constructor(
         viewModelScope.launch {
             _actions.send(
                 Action.ShowError(
-                    error = ErrorType.NetworkError,
+                    error = AuthError.NetworkAuthError,
                     message = throwable.localizedMessage
                 )
             )
@@ -83,7 +83,7 @@ class AuthViewModel @Inject constructor(
                         if (BuildConfig.DEBUG) Log.i(TAG, "Response code: ${response.code()}")
                         _actions.send(
                             Action.ShowError(
-                                error = ErrorType.HttpError,
+                                error = AuthError.HttpAuthError,
                                 HttpCode = response.code()
                             )
                         )
