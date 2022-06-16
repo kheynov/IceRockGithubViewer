@@ -11,6 +11,7 @@
     <color name="yellow">#FFFAD876</color>
     <color name="light_green">#FF6ED370</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="white_with_opacity">#B2FFFFFF</color>
 
     <color name="background">#FF0D1117</color>
     <color name="status_bar">#FF161B22</color>

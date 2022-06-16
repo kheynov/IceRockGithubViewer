@@ -32,4 +32,5 @@
     <string name="watchers_icon_content_description">Watchers icon</string>
     <string name="watchers_label">watchers</string>
     <string name="stars_label">stars</string>
+    <string name="auth_action_bar_label">Sign In</string>
 </resources>

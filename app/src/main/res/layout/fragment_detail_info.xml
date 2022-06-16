@@ -65,7 +65,6 @@
             android:id="@+id/license"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="15dp"
             android:textColor="@color/white"
             android:textSize="16sp"
             app:layout_constraintBottom_toBottomOf="@+id/license_icon"
@@ -187,22 +186,113 @@
             app:layout_constraintTop_toTopOf="@+id/watchers_count" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
+    <com.google.android.material.progressindicator.CircularProgressIndicator
+        android:id="@+id/readme_loading_pb"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginTop="24dp"
+        android:indeterminate="true"
+        android:visibility="invisible"
+        app:indicatorColor="@color/white"
+        app:indicatorSize="24dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/repository_detail_info_block" />
+
+    <!-- README -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/repository_detail_readme_block"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="16dp"
         android:layout_marginTop="24dp"
+        android:visibility="visible"
         app:layout_constraintTop_toBottomOf="@+id/repository_detail_info_block">
 
         <TextView
             android:id="@+id/readme_text_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textColor="@color/white"
+            android:textColor="@color/white_with_opacity"
+            android:textSize="16sp"
             app:layout_constraintTop_toTopOf="parent"
-            tools:text="Mobile Kotlin resources"
-            tools:textSize="20sp" />
+            tools:text="Mobile Kotlin resources" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!-- Error Screen-->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/detail_info_error_screen"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="invisible">
+
+        <ImageView
+            android:id="@+id/detail_info_error_image"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/error_logo_content_description"
+            app:layout_constraintBottom_toTopOf="@id/detail_info_error_button"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:src="@drawable/ic_no_connection" />
+
+        <TextView
+            android:id="@+id/detail_info_error_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:textSize="16sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.498"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/detail_info_error_image"
+            tools:text="Connection error"
+            tools:textColor="@color/error" />
+
+        <TextView
+            android:id="@+id/detail_info_error_description"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/white"
+            android:textSize="14sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/detail_info_error_title"
+            tools:text="Check your internet connection" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/detail_info_error_button"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginBottom="16dp"
+            android:backgroundTint="@color/accent"
+            android:textColor="@color/white"
+            android:textSize="14sp"
+            android:visibility="visible"
+            app:cornerRadius="8dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            tools:text="Retry" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <com.google.android.material.progressindicator.CircularProgressIndicator
+        android:id="@+id/detail_info_loading_pb"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:layout_gravity="center"
+        android:elevation="10dp"
+        android:indeterminate="true"
+        android:visibility="invisible"
+        app:indicatorColor="@color/white"
+        app:indicatorSize="56dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
