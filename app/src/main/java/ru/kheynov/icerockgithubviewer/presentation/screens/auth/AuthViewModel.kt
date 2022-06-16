@@ -21,6 +21,7 @@ private const val TAG = "AuthViewModel"
 class AuthViewModel @Inject constructor(
     private val repository: AppRepository,
 ) : ViewModel() {
+    private val tokenValidationPattern = "^[a-z_0-9]+$".toRegex(RegexOption.IGNORE_CASE)
 
     private val _token = MutableLiveData<String>()
     val token: LiveData<String>
@@ -31,11 +32,6 @@ class AuthViewModel @Inject constructor(
     val state: LiveData<State>
         get() = _state
 
-    init {
-        if (repository.getToken() != null) {
-            _token.value = repository.getToken()
-        }
-    }
 
     private val _actions: Channel<Action> = Channel(Channel.BUFFERED)
     val actions: Flow<Action> = _actions.receiveAsFlow()
@@ -51,10 +47,14 @@ class AuthViewModel @Inject constructor(
     sealed interface Action {
         data class ShowError(
             val error: AuthError, val message: String? = null,
-            val HttpCode: Int? = null
+            val HttpCode: Int? = null,
         ) : Action
 
         object RouteToMain : Action
+    }
+
+    init {
+        if (repository.isAuthorized) _actions.trySend(Action.RouteToMain)
     }
 
     private val exceptionHandler = CoroutineExceptionHandler { _, throwable ->
@@ -71,12 +71,21 @@ class AuthViewModel @Inject constructor(
     fun onSignInButtonPressed() {
         signInJob = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             _state.postValue(State.Loading)
+
+            val matches = token.value.toString().matches(tokenValidationPattern)
+            Log.i(TAG, "Matches: $matches")
+            if (!token.value.toString().matches(tokenValidationPattern)) {
+                _state.postValue(State.InvalidInput)
+                return@launch
+            }
+
             val response = repository.signIn(_token.value.toString())
             withContext(Dispatchers.Main) {
                 if (response.isSuccessful) {
                     _state.postValue(State.Idle)
                     _actions.send(Action.RouteToMain)
                 } else {
+                    Log.i(TAG, response.code().toString())
                     if (response.code() == 401) {
                         _state.postValue(State.InvalidInput)
                     } else {
