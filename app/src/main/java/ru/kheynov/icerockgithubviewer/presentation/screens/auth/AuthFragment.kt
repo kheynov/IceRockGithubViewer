@@ -65,7 +65,8 @@ class AuthFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         // Hiding action bar for auth screen
         (requireActivity() as AppCompatActivity).supportActionBar?.apply {
-            hide()
+            title = getString(R.string.auth_action_bar_label)
+            setDisplayHomeAsUpEnabled(false)
         }
 
         navController = Navigation.findNavController(view)
@@ -93,6 +94,7 @@ class AuthFragment : Fragment() {
                         it, getString(R.string.error)
                     )
                 }
+                binding.signInButton.isEnabled = true
             }
         }
     }
