@@ -20,9 +20,15 @@ class AppRepository @Inject constructor(
         userName = keyValueStorage.userName!!
     )
 
-    fun getUserName() = keyValueStorage.userName
+    val token: String?
+        get() = keyValueStorage.authToken
 
-    fun getToken() = keyValueStorage.authToken
+    val isAuthorized: Boolean
+        get() = keyValueStorage.isAuthorized
+
+    fun logOut() {
+        keyValueStorage.isAuthorized = false
+    }
 
     suspend fun getRepository(repoId: String): Response<RepoDetails> = githubApi
         .getRepositoryDetails(
@@ -30,7 +36,6 @@ class AppRepository @Inject constructor(
             repoName = repoId,
             authHeader = "Bearer ${keyValueStorage.authToken}",
         )
-
 
     suspend fun getRepositoryReadme(
         ownerName: String,
@@ -51,6 +56,7 @@ class AppRepository @Inject constructor(
         if (res.isSuccessful) {
             keyValueStorage.authToken = token
             keyValueStorage.userName = res.body()?.login
+            keyValueStorage.isAuthorized = true
         }
         return res
     }

@@ -3,8 +3,7 @@ package ru.kheynov.icerockgithubviewer.data.api
 import android.content.Context
 import android.content.SharedPreferences
 import dagger.hilt.android.qualifiers.ApplicationContext
-import ru.kheynov.icerockgithubviewer.data.api.KEYS.AUTH_TOKEN
-import ru.kheynov.icerockgithubviewer.data.api.KEYS.USERNAME
+import ru.kheynov.icerockgithubviewer.data.api.KEYS.*
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -13,6 +12,7 @@ private const val PREF_NAME = "KEY_VALUE_STORAGE"
 enum class KEYS {
     AUTH_TOKEN,
     USERNAME,
+    IS_AUTHORIZED,
 }
 
 @Singleton
@@ -21,6 +21,13 @@ class KeyValueStorage @Inject constructor(@ApplicationContext context: Context) 
     private val prefs: SharedPreferences =
         context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
 
+    var isAuthorized: Boolean = false
+        set(value) {
+            field = value
+            saveToPreferences(value, IS_AUTHORIZED)
+        }
+        get() = prefs.getBoolean(IS_AUTHORIZED.name, false)
+
     var authToken: String? = null
         set(value) {
             if (field != value) {
@@ -28,7 +35,7 @@ class KeyValueStorage @Inject constructor(@ApplicationContext context: Context) 
                 saveToPreferences(value, AUTH_TOKEN)
             }
         }
-        get() = getFromPreferences(AUTH_TOKEN)
+        get() = prefs.getString(AUTH_TOKEN.name, "")
 
     var userName: String? = null
         set(value) {
@@ -37,13 +44,14 @@ class KeyValueStorage @Inject constructor(@ApplicationContext context: Context) 
                 saveToPreferences(value, USERNAME)
             }
         }
-        get() = getFromPreferences(USERNAME)
+        get() = prefs.getString(USERNAME.name, "")
 
-    private fun saveToPreferences(value: String?, key: KEYS) {
+    private fun <T> saveToPreferences(value: T?, key: KEYS) {
         val editor: SharedPreferences.Editor = prefs.edit()
-        editor.putString(key.name, value)
+        when (value) {
+            is Boolean -> editor.putBoolean(key.name, value)
+            is String -> editor.putString(key.name, value)
+        }
         editor.apply()
     }
-
-    private fun getFromPreferences(key: KEYS) = prefs.getString(key.name, "")
 }
