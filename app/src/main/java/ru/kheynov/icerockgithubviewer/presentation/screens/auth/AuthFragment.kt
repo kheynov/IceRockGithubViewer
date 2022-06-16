@@ -39,14 +39,17 @@ class AuthFragment : Fragment() {
         binding = FragmentAuthBinding.inflate(inflater, container, false)
 
         viewModel.state.observe(viewLifecycleOwner) { state ->
-            binding.signInButton.text = if (state is Loading) "" else
-                getString(R.string.sign_in_button_label)
-            binding.singInProgressBar.visibility = if (state is Loading) VISIBLE else INVISIBLE
-            binding.authTextInputLayout.error =
-                if (state is AuthViewModel.State.InvalidInput) getString(
-                    R.string
-                        .error_message
-                ) else ""
+            binding.apply {
+                signInButton.text = if (state is Loading) "" else
+                    getString(R.string.sign_in_button_label)
+                singInProgressBar.visibility = if (state is Loading) VISIBLE else INVISIBLE
+                authTextInputLayout.error =
+                    if (state is AuthViewModel.State.InvalidInput) getString(
+                        R.string
+                            .error_message
+                    ) else ""
+                signInButton.isEnabled = state !is Loading
+            }
         }
 
         binding.signInButton.setOnClickListener {
