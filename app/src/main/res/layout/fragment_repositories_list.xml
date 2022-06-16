@@ -35,7 +35,7 @@
             android:id="@+id/repositories_list_error_image"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:contentDescription="@string/error_logo"
+            android:contentDescription="@string/error_logo_content_description"
             app:layout_constraintBottom_toTopOf="@id/repositories_list_error_button"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
