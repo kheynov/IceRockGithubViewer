@@ -21,7 +21,7 @@ import ru.kheynov.icerockgithubviewer.presentation.screens.repositories_list.Rep
 import ru.kheynov.icerockgithubviewer.utils.RepositoriesListError
 
 
-private const val TAG = "RepositoriesListFragment"
+private const val TAG = "RepositoriesListScreen"
 
 @AndroidEntryPoint
 class RepositoriesListFragment : Fragment() {
@@ -45,7 +45,7 @@ class RepositoriesListFragment : Fragment() {
             false,
         )
 
-        viewModel.fetchRepositories() // trying to load repositories
+        if (viewModel.state.value !is Loaded) viewModel.fetchRepositories()
 
         binding.repositoriesListErrorButton.setOnClickListener {
             viewModel.fetchRepositories() // Retry | Refresh button listener
@@ -70,7 +70,9 @@ class RepositoriesListFragment : Fragment() {
                     val repositoriesListAdapter = RepositoriesListAdapter { position ->
                         onListItemClick(state.repos[position])
                     }
-                    repositoriesListAdapter.items = state.repos
+                    // taking first 10 repositories
+                    repositoriesListAdapter.items = state.repos.take(10)
+
                     repositoriesListRecyclerView.adapter = repositoriesListAdapter
                 } else {
                     repositoriesListRecyclerView.adapter = null
@@ -163,11 +165,7 @@ class RepositoriesListFragment : Fragment() {
 
     private fun onListItemClick(repo: Repo) {
         if (BuildConfig.DEBUG) Log.i(TAG, "Tapped on ${repo.name} element")
-
-        //TODO: Navigating to details
-        /*binding.repositoriesListLabel.setOnClickListener {
-            navController.navigate(R.id.action_repositoriesListFragment_to_detailFragment)
-        }*/
+        navController.navigate(R.id.action_repositoriesListFragment_to_detailFragment)
     }
 
 

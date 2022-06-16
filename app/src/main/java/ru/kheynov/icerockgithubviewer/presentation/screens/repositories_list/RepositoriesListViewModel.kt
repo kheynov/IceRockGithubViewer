@@ -33,7 +33,11 @@ class RepositoriesListViewModel @Inject constructor(
 
     private val exceptionHandler = CoroutineExceptionHandler { _, throwable ->
         Log.e(TAG, "Error: ", throwable)
-        _state.postValue(State.Error(RepositoriesListError.NetworkError))
+        if (throwable.message?.contains("hostname") == true) {
+            _state.postValue(State.Error(RepositoriesListError.NetworkError))
+        } else {
+            _state.postValue(State.Error(RepositoriesListError.Error(throwable.message.toString())))
+        }
     }
 
     fun fetchRepositories() {
