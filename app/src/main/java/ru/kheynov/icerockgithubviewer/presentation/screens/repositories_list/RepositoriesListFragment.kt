@@ -17,8 +17,9 @@ import ru.kheynov.icerockgithubviewer.BuildConfig
 import ru.kheynov.icerockgithubviewer.R
 import ru.kheynov.icerockgithubviewer.data.entities.Repo
 import ru.kheynov.icerockgithubviewer.databinding.FragmentRepositoriesListBinding
+import ru.kheynov.icerockgithubviewer.presentation.screens.detail_info.DetailInfoFragment
 import ru.kheynov.icerockgithubviewer.presentation.screens.repositories_list.RepositoriesListViewModel.State.*
-import ru.kheynov.icerockgithubviewer.utils.RepositoriesListError
+import ru.kheynov.icerockgithubviewer.utils.RepositoryError
 
 
 private const val TAG = "RepositoriesListScreen"
@@ -71,7 +72,7 @@ class RepositoriesListFragment : Fragment() {
                         onListItemClick(state.repos[position])
                     }
                     // taking first 10 repositories
-                    repositoriesListAdapter.items = state.repos.take(10)
+                    repositoriesListAdapter.items = state.repos
 
                     repositoriesListRecyclerView.adapter = repositoriesListAdapter
                 } else {
@@ -83,7 +84,6 @@ class RepositoriesListFragment : Fragment() {
     }
 
     private fun FragmentRepositoriesListBinding.bindErrorScreen(
-        // binding error view
         state: RepositoriesListViewModel.State,
     ) {
         repositoriesListErrorButton.apply {
@@ -91,21 +91,20 @@ class RepositoriesListFragment : Fragment() {
                 viewModel.fetchRepositories()
             }
             text = if (state is Error) when (state.error) {
-                is RepositoriesListError.NetworkError -> getString(R.string.retry_button_label)
+                is RepositoryError.NetworkError -> getString(R.string.retry_button_label)
                 else -> getString(R.string.refresh_button_label)
-            } else ""
+            } else getString(R.string.refresh_button_label)
         }
 
-        repositoriesListErrorScreen.visibility = if (state is
-                    Error || state is Empty
+        repositoriesListErrorScreen.visibility = if (state is Error || state is Empty
         ) View.VISIBLE else View.INVISIBLE
 
 
         repositoriesListErrorTitle.apply {
             text = when (state) {
                 is Error -> when (state.error) {
-                    is RepositoriesListError.Error -> getString(R.string.error)
-                    is RepositoriesListError.NetworkError -> getString(R.string.connection_error)
+                    is RepositoryError.Error -> getString(R.string.error)
+                    is RepositoryError.NetworkError -> getString(R.string.connection_error)
                 }
                 is Empty -> getString(R.string.empty_message)
                 else -> ""
@@ -119,10 +118,10 @@ class RepositoriesListFragment : Fragment() {
         }
         repositoriesListErrorDescription.text = when (state) {
             is Error -> when (state.error) {
-                is RepositoriesListError.NetworkError -> {
+                is RepositoryError.NetworkError -> {
                     getString(R.string.check_your_internet_connection)
                 }
-                is RepositoriesListError.Error -> {
+                is RepositoryError.Error -> {
                     getString(
                         R.string.error_repositories,
                         state.error.message,
@@ -135,9 +134,9 @@ class RepositoriesListFragment : Fragment() {
         repositoriesListErrorImage.setImageDrawable(when (state) {
             is Error -> context?.let {
                 when (state.error) {
-                    is RepositoriesListError.NetworkError -> getDrawable(it,
+                    is RepositoryError.NetworkError -> getDrawable(it,
                         R.drawable.ic_no_connection)
-                    is RepositoriesListError.Error -> getDrawable(it, R.drawable.ic_error)
+                    is RepositoryError.Error -> getDrawable(it, R.drawable.ic_error)
                 }
             }
             else -> context?.let {
@@ -154,7 +153,6 @@ class RepositoriesListFragment : Fragment() {
         (requireActivity() as AppCompatActivity).supportActionBar?.apply {
             title = getString(R.string.repositories_label)
             setDisplayHomeAsUpEnabled(false)
-            show()
         }
 
         navController = Navigation.findNavController(view)
@@ -165,7 +163,8 @@ class RepositoriesListFragment : Fragment() {
 
     private fun onListItemClick(repo: Repo) {
         if (BuildConfig.DEBUG) Log.i(TAG, "Tapped on ${repo.name} element")
-        navController.navigate(R.id.action_repositoriesListFragment_to_detailFragment)
+        navController.navigate(R.id.action_repositoriesListFragment_to_detailFragment,
+            DetailInfoFragment.createArguments(repoName = repo.name))
     }
 
 
@@ -181,6 +180,7 @@ class RepositoriesListFragment : Fragment() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         val id = item.itemId
         if (id == R.id.menu_action_logout) {
+            viewModel.logOut()
             navController.navigate(R.id.action_repositoriesListFragment_to_authFragment)
             return true
         }

@@ -6,12 +6,13 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.*
+import ru.kheynov.icerockgithubviewer.BuildConfig
 import ru.kheynov.icerockgithubviewer.data.entities.Repo
 import ru.kheynov.icerockgithubviewer.data.repository.AppRepository
-import ru.kheynov.icerockgithubviewer.utils.RepositoriesListError
+import ru.kheynov.icerockgithubviewer.utils.RepositoryError
 import javax.inject.Inject
 
-private const val TAG = "RepositoriesListViewModel"
+private const val TAG = "RepositoriesListVM"
 
 @HiltViewModel
 class RepositoriesListViewModel @Inject constructor(
@@ -27,16 +28,16 @@ class RepositoriesListViewModel @Inject constructor(
     sealed interface State {
         object Loading : State
         data class Loaded(val repos: List<Repo>) : State
-        data class Error(val error: RepositoriesListError) : State
+        data class Error(val error: RepositoryError) : State
         object Empty : State
     }
 
     private val exceptionHandler = CoroutineExceptionHandler { _, throwable ->
-        Log.e(TAG, "Error: ", throwable)
+        if (BuildConfig.DEBUG) Log.e(TAG, "Error: ", throwable)
         if (throwable.message?.contains("hostname") == true) {
-            _state.postValue(State.Error(RepositoriesListError.NetworkError))
+            _state.postValue(State.Error(RepositoryError.NetworkError))
         } else {
-            _state.postValue(State.Error(RepositoriesListError.Error(throwable.message.toString())))
+            _state.postValue(State.Error(RepositoryError.Error(throwable.message.toString())))
         }
     }
 
@@ -48,12 +49,11 @@ class RepositoriesListViewModel @Inject constructor(
                 if (response.isSuccessful) {
                     if (response.body().isNullOrEmpty()) {
                         _state.postValue(State.Empty)
-                        return@withContext
                     } else {
-                        _state.postValue(State.Loaded(response.body()!!))
+                        _state.postValue(State.Loaded(response.body()!!))//TODO: .take(10)
                     }
                 } else {
-                    _state.postValue(State.Error(RepositoriesListError.Error(response.code()
+                    _state.postValue(State.Error(RepositoryError.Error(response.code()
                         .toString())))
                 }
             }
@@ -64,4 +64,7 @@ class RepositoriesListViewModel @Inject constructor(
         super.onCleared()
         fetchRepositoriesJob?.cancel()
     }
+
+    fun logOut() = repository.logOut()
+
 }
