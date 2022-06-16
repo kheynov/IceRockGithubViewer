@@ -89,4 +89,8 @@ dependencies {
     implementation("androidx.navigation:navigation-fragment-ktx:$navVersion")
     implementation("androidx.navigation:navigation-ui-ktx:$navVersion")
 
+    // Markwon (markdown library)
+    implementation("io.noties.markwon:core:4.6.2")
+
+
 }

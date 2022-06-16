@@ -1,20 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/detailFragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background"
+    android:baselineAligned="false"
+    android:orientation="horizontal"
     tools:context=".presentation.screens.detail_info.DetailInfoFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/repository_detail_info_block"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="16dp"
         android:layout_marginTop="24dp"
-        app:layout_constraintTop_toTopOf="parent">
+        android:layout_weight="1">
 
         <!-- Link -->
         <ImageView
@@ -189,11 +191,11 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/repository_detail_readme_block"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="16dp"
         android:layout_marginTop="24dp"
-        app:layout_constraintTop_toBottomOf="@+id/repository_detail_info_block">
+        android:layout_weight="1">
 
         <TextView
             android:id="@+id/readme_text_view"
@@ -205,4 +207,4 @@
             tools:textSize="20sp" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-</androidx.constraintlayout.widget.ConstraintLayout>
+</LinearLayout>
