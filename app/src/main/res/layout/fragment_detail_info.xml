@@ -209,14 +209,20 @@
         android:visibility="visible"
         app:layout_constraintTop_toBottomOf="@+id/repository_detail_info_block">
 
-        <TextView
-            android:id="@+id/readme_text_view"
+        <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textColor="@color/white_with_opacity"
-            android:textSize="16sp"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:text="Mobile Kotlin resources" />
+            android:layout_height="match_parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:id="@+id/readme_text_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/white_with_opacity"
+                android:textSize="16sp"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="Mobile Kotlin resources" />
+        </ScrollView>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

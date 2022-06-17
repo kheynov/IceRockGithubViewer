@@ -50,7 +50,9 @@ class RepositoriesListViewModel @Inject constructor(
                     if (response.body().isNullOrEmpty()) {
                         _state.postValue(State.Empty)
                     } else {
-                        _state.postValue(State.Loaded(response.body()!!))//TODO: .take(10)
+                        _state.postValue(
+                            State.Loaded(response.body()?.take(10) ?: emptyList())
+                        )
                     }
                 } else {
                     _state.postValue(State.Error(RepositoryError.Error(response.code()
