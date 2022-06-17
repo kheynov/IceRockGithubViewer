@@ -5,6 +5,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.*
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
@@ -12,15 +13,18 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
+import com.m2mobi.markymark.MarkyMark
+import com.m2mobi.markymarkandroid.MarkyMarkAndroid
+import com.m2mobi.markymarkcontentful.ContentfulFlavor
 import dagger.hilt.android.AndroidEntryPoint
-import io.noties.markwon.Markwon
 import ru.kheynov.icerockgithubviewer.BuildConfig
 import ru.kheynov.icerockgithubviewer.R
 import ru.kheynov.icerockgithubviewer.databinding.FragmentDetailInfoBinding
+import ru.kheynov.icerockgithubviewer.error_types.RepositoryError
 import ru.kheynov.icerockgithubviewer.presentation.screens.detail_info.DetailInfoViewModel.ReadmeState
 import ru.kheynov.icerockgithubviewer.presentation.screens.detail_info.DetailInfoViewModel.State.Loaded
 import ru.kheynov.icerockgithubviewer.presentation.screens.detail_info.DetailInfoViewModel.State.Loading
-import ru.kheynov.icerockgithubviewer.error_types.RepositoryError
+import ru.kheynov.icerockgithubviewer.utils.PicassoImageLoader
 
 private const val TAG = "DetailInfo"
 
@@ -36,7 +40,8 @@ class DetailInfoFragment : Fragment() {
     private val repoName: String
         get() = requireNotNull(requireArguments().getString(REPOSITORY_NAME_KEY))
 
-    private lateinit var markDownRenderer: Markwon
+
+    private lateinit var markDownRenderer: MarkyMark<View>
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -106,12 +111,19 @@ class DetailInfoFragment : Fragment() {
                     if (state !is ReadmeState.Loading) View.VISIBLE else View.INVISIBLE
 
                 if (state is ReadmeState.Empty) {
-                    readmeTextView.text = "No README.MD"
+                    readmeText.addView(
+                        TextView(requireContext()).apply {
+                            text = context.getString(R.string.no_readme)
+                        }
+                    )
                 }
 
                 if (state is ReadmeState.Loaded) {
-                    markDownRenderer.setMarkdown(readmeTextView,
-                        state.markdownToString())
+                    readmeText.removeAllViews()
+                    val paragraphs = markDownRenderer.parseMarkdown(state.markdownToString())
+                    for(paragraph in paragraphs){
+                        readmeText.addView(paragraph)
+                    }
                 }
                 readmeLoadingPb.visibility = if (state is ReadmeState.Loading) View.VISIBLE else
                     View.INVISIBLE
@@ -213,7 +225,8 @@ class DetailInfoFragment : Fragment() {
             setDisplayHomeAsUpEnabled(true)
             show()
         }
-        markDownRenderer = Markwon.create(requireContext())
+        markDownRenderer = MarkyMarkAndroid.getMarkyMark(activity!!, ContentfulFlavor(),
+            PicassoImageLoader(requireContext()))
     }
 
     private fun openUrl(url: String) {

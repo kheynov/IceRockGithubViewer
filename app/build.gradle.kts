@@ -73,24 +73,27 @@ dependencies {
 
     // Retrofit
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
-    implementation("com.squareup.okhttp3:okhttp:5.0.0-alpha.2")
+    implementation("com.squareup.okhttp3:okhttp:5.0.0-alpha.9")
 
     // Coroutines
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.2")
 
     // Serialization
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-core:1.3.2")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-core:1.3.3")
     implementation("com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:0.8.0")
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.2")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.3")
 
     // Navigation
     val navVersion = "2.4.2"
     implementation("androidx.navigation:navigation-fragment-ktx:$navVersion")
     implementation("androidx.navigation:navigation-ui-ktx:$navVersion")
 
-    // Markwon (markdown library)
-    implementation("io.noties.markwon:core:4.6.2")
+    // markdown library
+    implementation("com.github.M2Mobi.MarkyMark-Android:android:0.2.5")
+    implementation("com.github.m2mobi.MarkyMark-Android:contentful:0.2.5")
 
     // SplashScreen API
     implementation("androidx.core:core-splashscreen:1.0.0-rc01")
+
+    implementation("com.squareup.picasso:picasso:2.8")
 }

@@ -214,14 +214,11 @@
             android:layout_height="match_parent"
             app:layout_constraintTop_toTopOf="parent">
 
-            <TextView
-                android:id="@+id/readme_text_view"
+            <LinearLayout
+                android:id="@+id/readme_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textColor="@color/white_with_opacity"
-                android:textSize="16sp"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:text="Mobile Kotlin resources" />
+                android:orientation="vertical" />
         </ScrollView>
 
     </androidx.constraintlayout.widget.ConstraintLayout>

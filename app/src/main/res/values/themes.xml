@@ -14,5 +14,6 @@
         <item name="android:statusBarColor">@color/status_bar</item>
         <item name="android:actionBarStyle">@style/RepositoriesActionBar</item>
         <!-- Customize your theme here. -->
+        <item name="MarkyMarkTheme">@style/MarkdownStyle</item>
     </style>
 </resources>
