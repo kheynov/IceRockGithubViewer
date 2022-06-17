@@ -153,6 +153,7 @@ class RepositoriesListFragment : Fragment() {
         (requireActivity() as AppCompatActivity).supportActionBar?.apply {
             title = getString(R.string.repositories_label)
             setDisplayHomeAsUpEnabled(false)
+            show()
         }
 
         navController = Navigation.findNavController(view)
