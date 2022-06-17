@@ -20,6 +20,7 @@ interface GithubApi {
     @GET("users/{userName}/repos")
     suspend fun getRepositoriesList(
         @Path("userName") userName: String,
+        @Query("sort") sortBy: String = "updated",
         @Header("Authorization") authHeader: String,
     ): Response<List<Repo>>
 
