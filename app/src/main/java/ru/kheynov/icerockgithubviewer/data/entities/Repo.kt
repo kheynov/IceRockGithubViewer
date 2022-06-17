@@ -12,5 +12,6 @@ data class Repo(
     val description: String?,
     val language: String?,
 ) {
-    fun getColor(): Int = LanguageColors.colorsOfLanguages[language] ?: Color.WHITE
+    val color: Int
+        get() = LanguageColors.colorsOfLanguages[language] ?: Color.WHITE
 }

@@ -36,7 +36,7 @@ class RepositoriesListAdapter(private val onItemClick: (Int) -> Unit) :
             else itemViewBinding.repositoriesListItemDescription.text = repo.description
 
             itemViewBinding.repositoriesListItemLanguage.text = repo.language
-            itemViewBinding.repositoriesListItemLanguage.setTextColor(repo.getColor())
+            itemViewBinding.repositoriesListItemLanguage.setTextColor(repo.color)
         }
     }
 
