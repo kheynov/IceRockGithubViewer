@@ -33,7 +33,8 @@ class AuthFragment : Fragment() {
     private val viewModel by viewModels<AuthViewModel>()
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View {
         binding = FragmentAuthBinding.inflate(inflater, container, false)
@@ -45,8 +46,7 @@ class AuthFragment : Fragment() {
                 singInProgressBar.visibility = if (state is Loading) VISIBLE else INVISIBLE
                 authTextInputLayout.error =
                     if (state is AuthViewModel.State.InvalidInput) getString(
-                        R.string
-                            .error_message
+                        R.string.error_message
                     ) else ""
                 signInButton.isEnabled = state !is Loading
             }

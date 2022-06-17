@@ -10,7 +10,7 @@ import kotlinx.coroutines.*
 import ru.kheynov.icerockgithubviewer.BuildConfig
 import ru.kheynov.icerockgithubviewer.data.entities.RepoDetails
 import ru.kheynov.icerockgithubviewer.data.repository.AppRepository
-import ru.kheynov.icerockgithubviewer.utils.RepositoryError
+import ru.kheynov.icerockgithubviewer.error_types.RepositoryError
 import javax.inject.Inject
 
 private const val TAG = "DetailInfoVM"
@@ -58,7 +58,6 @@ class DetailInfoViewModel @Inject constructor(
 
         } else {
             _state.postValue(State.Error(RepositoryError.Error(throwable.message.toString())))
-
         }
     }
     private val fetchReadmeExceptionHandler = CoroutineExceptionHandler { _, throwable ->

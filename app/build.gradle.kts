@@ -5,7 +5,6 @@ plugins {
     kotlin("kapt")
     id("kotlinx-serialization")
     id("androidx.navigation.safeargs.kotlin")
-
 }
 
 android {
@@ -94,6 +93,4 @@ dependencies {
 
     // SplashScreen API
     implementation("androidx.core:core-splashscreen:1.0.0-rc01")
-
-
 }

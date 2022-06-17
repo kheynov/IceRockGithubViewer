@@ -1,4 +1,4 @@
-package ru.kheynov.icerockgithubviewer.utils
+package ru.kheynov.icerockgithubviewer.error_types
 
 sealed interface AuthError {
     object NetworkAuthError : AuthError

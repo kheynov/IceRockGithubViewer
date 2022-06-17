@@ -6,7 +6,7 @@ import android.os.Bundle
 import androidx.fragment.app.DialogFragment
 import ru.kheynov.icerockgithubviewer.R
 import ru.kheynov.icerockgithubviewer.databinding.DialogErrorBinding
-import ru.kheynov.icerockgithubviewer.utils.AuthError
+import ru.kheynov.icerockgithubviewer.error_types.AuthError
 
 class ErrorDialogFragment(private val error: AuthError, private val code: Int?) : DialogFragment() {
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {

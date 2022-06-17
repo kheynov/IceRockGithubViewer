@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.receiveAsFlow
 import ru.kheynov.icerockgithubviewer.BuildConfig
 import ru.kheynov.icerockgithubviewer.data.repository.AppRepository
-import ru.kheynov.icerockgithubviewer.utils.AuthError
+import ru.kheynov.icerockgithubviewer.error_types.AuthError
 import javax.inject.Inject
 
 private const val TAG = "AuthViewModel"
@@ -21,6 +21,7 @@ private const val TAG = "AuthViewModel"
 class AuthViewModel @Inject constructor(
     private val repository: AppRepository,
 ) : ViewModel() {
+
     private val tokenValidationPattern = "^[a-z_0-9]+$".toRegex(RegexOption.IGNORE_CASE)
 
     private val _token = MutableLiveData<String>()

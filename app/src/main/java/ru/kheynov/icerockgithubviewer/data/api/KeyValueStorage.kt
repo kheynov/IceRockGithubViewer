@@ -3,9 +3,9 @@ package ru.kheynov.icerockgithubviewer.data.api
 import android.content.Context
 import android.content.SharedPreferences
 import dagger.hilt.android.qualifiers.ApplicationContext
-import ru.kheynov.icerockgithubviewer.data.api.KEYS.*
 import javax.inject.Inject
 import javax.inject.Singleton
+import ru.kheynov.icerockgithubviewer.data.api.KEYS.*
 
 private const val PREF_NAME = "KEY_VALUE_STORAGE"
 

@@ -9,7 +9,7 @@ import kotlinx.coroutines.*
 import ru.kheynov.icerockgithubviewer.BuildConfig
 import ru.kheynov.icerockgithubviewer.data.entities.Repo
 import ru.kheynov.icerockgithubviewer.data.repository.AppRepository
-import ru.kheynov.icerockgithubviewer.utils.RepositoryError
+import ru.kheynov.icerockgithubviewer.error_types.RepositoryError
 import javax.inject.Inject
 
 private const val TAG = "RepositoriesListVM"
@@ -34,9 +34,10 @@ class RepositoriesListViewModel @Inject constructor(
 
     private val exceptionHandler = CoroutineExceptionHandler { _, throwable ->
         if (BuildConfig.DEBUG) Log.e(TAG, "Error: ", throwable)
-        if (throwable.message?.contains("hostname") == true) {
+        if (throwable.message?.let { it.contains("hostname") || it.contains("timeout") } == true
+        ) {
             _state.postValue(State.Error(RepositoryError.NetworkError))
-        } else {
+        } else { // if error not network-based
             _state.postValue(State.Error(RepositoryError.Error(throwable.message.toString())))
         }
     }
@@ -50,7 +51,7 @@ class RepositoriesListViewModel @Inject constructor(
                     if (response.body().isNullOrEmpty()) {
                         _state.postValue(State.Empty)
                     } else {
-                        _state.postValue(
+                        _state.postValue( // Loading first 10 repositories ordered by update time
                             State.Loaded(response.body()?.take(10) ?: emptyList())
                         )
                     }

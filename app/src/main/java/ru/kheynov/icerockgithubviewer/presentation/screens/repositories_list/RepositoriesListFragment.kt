@@ -19,7 +19,7 @@ import ru.kheynov.icerockgithubviewer.data.entities.Repo
 import ru.kheynov.icerockgithubviewer.databinding.FragmentRepositoriesListBinding
 import ru.kheynov.icerockgithubviewer.presentation.screens.detail_info.DetailInfoFragment
 import ru.kheynov.icerockgithubviewer.presentation.screens.repositories_list.RepositoriesListViewModel.State.*
-import ru.kheynov.icerockgithubviewer.utils.RepositoryError
+import ru.kheynov.icerockgithubviewer.error_types.RepositoryError
 
 
 private const val TAG = "RepositoriesListScreen"
@@ -58,29 +58,37 @@ class RepositoriesListFragment : Fragment() {
                 "Repos list size: ${state.repos.size}")
 
             binding.apply {
-                repositoriesListLoadingPb.visibility =
-                    if (state is Loading) View.VISIBLE else
-                        View.INVISIBLE
-
-                repositoriesListRecyclerView.visibility = if (state is Loaded) View.VISIBLE else
-                    View.INVISIBLE
-
+                bindRepositoriesList(state)
                 bindErrorScreen(state)
-
-                if (state is Loaded) {
-                    val repositoriesListAdapter = RepositoriesListAdapter { position ->
-                        onListItemClick(state.repos[position])
-                    }
-                    // taking first 10 repositories
-                    repositoriesListAdapter.items = state.repos
-
-                    repositoriesListRecyclerView.adapter = repositoriesListAdapter
-                } else {
-                    repositoriesListRecyclerView.adapter = null
-                }
             }
+
         }
         return binding.root
+    }
+
+    private fun FragmentRepositoriesListBinding.bindRepositoriesList(
+        state: RepositoriesListViewModel.State,
+    ) {
+        this.apply {
+            repositoriesListLoadingPb.visibility =
+                if (state is Loading) View.VISIBLE else
+                    View.INVISIBLE
+
+            repositoriesListRecyclerView.visibility = if (state is Loaded) View.VISIBLE else
+                View.INVISIBLE
+
+            if (state is Loaded) {
+                val repositoriesListAdapter = RepositoriesListAdapter { position ->
+                    onListItemClick(state.repos[position])
+                }
+                // taking first 10 repositories
+                repositoriesListAdapter.items = state.repos
+
+                repositoriesListRecyclerView.adapter = repositoriesListAdapter
+            } else {
+                repositoriesListRecyclerView.adapter = null
+            }
+        }
     }
 
     private fun FragmentRepositoriesListBinding.bindErrorScreen(
@@ -148,7 +156,6 @@ class RepositoriesListFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         // configuring action bar
         (requireActivity() as AppCompatActivity).supportActionBar?.apply {
             title = getString(R.string.repositories_label)

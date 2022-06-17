@@ -20,7 +20,7 @@ import ru.kheynov.icerockgithubviewer.databinding.FragmentDetailInfoBinding
 import ru.kheynov.icerockgithubviewer.presentation.screens.detail_info.DetailInfoViewModel.ReadmeState
 import ru.kheynov.icerockgithubviewer.presentation.screens.detail_info.DetailInfoViewModel.State.Loaded
 import ru.kheynov.icerockgithubviewer.presentation.screens.detail_info.DetailInfoViewModel.State.Loading
-import ru.kheynov.icerockgithubviewer.utils.RepositoryError
+import ru.kheynov.icerockgithubviewer.error_types.RepositoryError
 
 private const val TAG = "DetailInfo"
 

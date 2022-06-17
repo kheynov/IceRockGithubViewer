@@ -18,5 +18,5 @@ data class RepoDetails(
 
 @Serializable
 data class License(
-    val name: String
+    val name: String,
 )
