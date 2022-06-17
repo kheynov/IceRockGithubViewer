@@ -15,8 +15,8 @@ android {
         applicationId = "ru.kheynov.icerockgithubviewer"
         minSdk = 21
         targetSdk = 31
-        versionCode = 3
-        versionName = "1.2"
+        versionCode = 4
+        versionName = "1.2.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -91,6 +91,9 @@ dependencies {
 
     // Markwon (markdown library)
     implementation("io.noties.markwon:core:4.6.2")
+
+    // SplashScreen API
+    implementation("androidx.core:core-splashscreen:1.0.0-rc01")
 
 
 }
