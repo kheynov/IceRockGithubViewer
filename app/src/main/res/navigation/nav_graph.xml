@@ -22,7 +22,11 @@
         tools:layout="@layout/fragment_repositories_list">
         <action
             android:id="@+id/action_repositoriesListFragment_to_detailFragment"
-            app:destination="@id/detailFragment" />
+            app:destination="@id/detailFragment"
+            app:enterAnim="@anim/slide_left"
+            app:exitAnim="@anim/fade_out"
+            app:popEnterAnim="@anim/slide_right"
+            app:popExitAnim="@anim/fade_out" />
         <action
             android:id="@+id/action_repositoriesListFragment_to_authFragment"
             app:destination="@id/authFragment"
@@ -38,6 +42,8 @@
         <action
             android:id="@+id/action_detailFragment_to_repositoriesListFragment"
             app:destination="@id/repositoriesListFragment"
+            app:enterAnim="@anim/fade_out"
+            app:exitAnim="@anim/slide_right"
             app:popUpTo="@id/repositoriesListFragment"
             app:popUpToInclusive="true" />
         <action
