@@ -90,10 +90,12 @@ dependencies {
 
     // markdown library
     implementation("com.github.M2Mobi.MarkyMark-Android:android:0.2.5") {
-        exclude(group = "com.m2mobi")
+        exclude(group = "com.m2mobi.markymark")
+        exclude(group = "com.github.m2mobi.MarkyMark-Android")
     }
     implementation("com.github.m2mobi.MarkyMark-Android:contentful:0.2.5") {
-        exclude(group = "com.m2mobi")
+        exclude(group = "com.m2mobi.markymark")
+        exclude(group = "com.github.m2mobi.MarkyMark-Android")
     }
 
     // SplashScreen API
