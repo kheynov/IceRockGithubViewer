@@ -90,9 +90,11 @@ dependencies {
 
     // markdown library
     implementation("com.github.M2Mobi.MarkyMark-Android:android:0.2.5") {
-        exclude(group = "com.github.M2Mobi")
+        exclude(group = "com.m2mobi")
     }
-    implementation("com.github.m2mobi.MarkyMark-Android:contentful:0.2.5")
+    implementation("com.github.m2mobi.MarkyMark-Android:contentful:0.2.5") {
+        exclude(group = "com.m2mobi")
+    }
 
     // SplashScreen API
     implementation("androidx.core:core-splashscreen:1.0.0-rc01")
