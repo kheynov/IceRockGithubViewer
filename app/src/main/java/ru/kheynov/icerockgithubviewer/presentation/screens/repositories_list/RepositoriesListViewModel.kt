@@ -5,7 +5,12 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import ru.kheynov.icerockgithubviewer.BuildConfig
 import ru.kheynov.icerockgithubviewer.data.entities.Repo
 import ru.kheynov.icerockgithubviewer.data.repository.AppRepository
@@ -23,8 +28,6 @@ class RepositoriesListViewModel @Inject constructor(
     val state: LiveData<State>
         get() = _state
 
-    private var fetchRepositoriesJob: Job? = null
-
     sealed interface State {
         object Loading : State
         data class Loaded(val repos: List<Repo>) : State
@@ -32,14 +35,18 @@ class RepositoriesListViewModel @Inject constructor(
         object Empty : State
     }
 
+    private var fetchRepositoriesJob: Job? = null
+
     private val exceptionHandler = CoroutineExceptionHandler { _, throwable ->
         if (BuildConfig.DEBUG) Log.e(TAG, "Error: ", throwable)
-        if (throwable.message?.let { it.contains("hostname") || it.contains("timeout") } == true
-        ) {
+
+        // If network error
+        if (throwable.message?.let { it.contains("hostname") || it.contains("timeout") } == true) {
             _state.postValue(State.Error(RepositoryError.NetworkError))
-        } else { // if error not network-based
-            _state.postValue(State.Error(RepositoryError.Error(throwable.message.toString())))
+            return@CoroutineExceptionHandler
         }
+        // if error not network-based
+        _state.postValue(State.Error(RepositoryError.Error(throwable.message.toString())))
     }
 
     fun fetchRepositories() {
@@ -50,15 +57,16 @@ class RepositoriesListViewModel @Inject constructor(
                 if (response.isSuccessful) {
                     if (response.body().isNullOrEmpty()) {
                         _state.postValue(State.Empty)
-                    } else {
-                        _state.postValue( // Loading first 10 repositories ordered by update time
-                            State.Loaded(response.body()?.take(10) ?: emptyList())
-                        )
+                        return@withContext
                     }
-                } else {
-                    _state.postValue(State.Error(RepositoryError.Error(response.code()
-                        .toString())))
+                    _state.postValue( // Loading first 10 repositories ordered by update time
+                        State.Loaded(response.body()?.take(10) ?: emptyList())
+                    )
+                    return@withContext
                 }
+                _state.postValue(
+                    State.Error(RepositoryError.Error(response.code().toString()))
+                )
             }
         }
     }
@@ -69,5 +77,4 @@ class RepositoriesListViewModel @Inject constructor(
     }
 
     fun logOut() = repository.logOut()
-
 }

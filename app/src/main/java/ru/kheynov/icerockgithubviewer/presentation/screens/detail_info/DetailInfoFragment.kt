@@ -4,7 +4,12 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
-import android.view.*
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
@@ -57,12 +62,13 @@ class DetailInfoFragment : Fragment() {
         if (viewModel.state.value !is Loaded) viewModel.fetchRepository(repoName)
 
         binding.detailInfoErrorButton.setOnClickListener {
+            //If details are loaded but readme not
             if (viewModel.state.value is Loaded) {
-                (viewModel.state.value as Loaded).githubRepo.let {
+                (viewModel.state.value as Loaded).githubRepo.let { repo ->
                     viewModel.fetchReadme(
-                        it.name,
-                        it.defaultBranch,
-                        it.owner.login
+                        repo.name,
+                        repo.defaultBranch,
+                        repo.owner.login
                     )
                 }
             } else {
@@ -73,28 +79,7 @@ class DetailInfoFragment : Fragment() {
         viewModel.state.observe(viewLifecycleOwner) { state ->
             if (BuildConfig.DEBUG) Log.i(TAG, state.toString())
             binding.apply {
-                repositoryDetailInfoBlock.visibility =
-                    if (state is Loaded) View.VISIBLE else View
-                        .INVISIBLE
-                forksCount.text =
-                    if (state is Loaded) state.githubRepo.forksCount.toString() else ""
-                starsCount.text =
-                    if (state is Loaded) state.githubRepo.starsCount.toString() else ""
-                watchersCount.text =
-                    if (state is Loaded) state.githubRepo.watchersCount.toString() else ""
-                license.text =
-                    if (state is Loaded)
-                        state.githubRepo.license?.name ?: "No license"
-                    else ""
-                link.text =
-                    if (state is Loaded) state.githubRepo.url.substringAfter("//") else ""
-
-                link.setOnClickListener {
-                    if (state is Loaded) openUrl(state.githubRepo.url)
-                }
-
-                detailInfoLoadingPb.visibility = if (state is Loading) View.VISIBLE else View
-                    .INVISIBLE
+                bindDetailInfo(state = state)
 
                 bindErrorScreen(
                     visibility = state is DetailInfoViewModel.State.Error,
@@ -104,29 +89,14 @@ class DetailInfoFragment : Fragment() {
             }
         }
 
-        viewModel.readmeState.observe(viewLifecycleOwner) { state ->
-            if (BuildConfig.DEBUG) Log.i(TAG, state.toString())
+        viewModel.readmeState.observe(viewLifecycleOwner) { readmeState ->
+            if (BuildConfig.DEBUG) Log.i(TAG, readmeState.toString())
             binding.apply {
-                readmeText.visibility =
-                    if (state !is ReadmeState.Loading) View.VISIBLE else View.INVISIBLE
-
-                noReadmeLabel.visibility =
-                    if (state is ReadmeState.Empty) View.VISIBLE else View.INVISIBLE
-
-                if (state is ReadmeState.Loaded) {
-                    readmeText.removeAllViews()
-                    val paragraphs = markDownRenderer.parseMarkdown(state.markdownToString())
-                    for (paragraph in paragraphs) {
-                        if (paragraph is TextView) Log.i(TAG, "Paragraph: ${paragraph.text}")
-                        readmeText.addView(paragraph)
-                    }
-                }
-                readmeLoadingPb.visibility = if (state is ReadmeState.Loading) View.VISIBLE else
-                    View.INVISIBLE
+                bindReadme(state = readmeState)
 
                 bindErrorScreen(
-                    visibility = state is ReadmeState.Error,
-                    error = if (state is ReadmeState.Error) state.error else null,
+                    visibility = readmeState is ReadmeState.Error,
+                    error = if (readmeState is ReadmeState.Error) readmeState.error else null,
                 )
             }
 
@@ -134,8 +104,95 @@ class DetailInfoFragment : Fragment() {
         return binding.root
     }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.log_out_button, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.menu_action_logout -> {
+                viewModel.logOut()
+                navController.navigate(R.id.action_detailFragment_to_authFragment)
+                true
+            }
+            android.R.id.home -> {
+                navController.navigate(R.id.action_detailFragment_to_repositoriesListFragment)
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        navController = Navigation.findNavController(view)
+
+        (requireActivity() as AppCompatActivity).supportActionBar?.apply {
+            title = repoName
+            setHomeAsUpIndicator(R.drawable.ic_arrow_left)
+            setDisplayHomeAsUpEnabled(true)
+            show()
+        }
+        markDownRenderer = MarkyMarkAndroid.getMarkyMark(
+            requireActivity(), ContentfulFlavor(),
+            PicassoImageLoader(requireContext())
+        )
+    }
+
+    private fun FragmentDetailInfoBinding.bindReadme(
+        state: ReadmeState
+    ) {
+        readmeText.visibility =
+            if (state !is ReadmeState.Loading) View.VISIBLE else View.INVISIBLE
+
+        noReadmeLabel.visibility =
+            if (state is ReadmeState.Empty) View.VISIBLE else View.INVISIBLE
+
+        if (state is ReadmeState.Loaded) {
+            readmeText.removeAllViews()
+            val paragraphs = markDownRenderer.parseMarkdown(state.markdownToString())
+            for (paragraph in paragraphs) {
+                if (paragraph is TextView) Log.i(TAG, "Paragraph: ${paragraph.text}")
+                readmeText.addView(paragraph)
+            }
+        }
+        readmeLoadingPb.visibility = if (state is ReadmeState.Loading) View.VISIBLE else
+            View.INVISIBLE
+    }
+
+    private fun FragmentDetailInfoBinding.bindDetailInfo(
+        state: DetailInfoViewModel.State
+    ) {
+        repositoryDetailInfoBlock.visibility =
+            if (state is Loaded) View.VISIBLE else View
+                .INVISIBLE
+        forksCount.text =
+            if (state is Loaded) state.githubRepo.forksCount.toString() else ""
+        starsCount.text =
+            if (state is Loaded) state.githubRepo.starsCount.toString() else ""
+        watchersCount.text =
+            if (state is Loaded) state.githubRepo.watchersCount.toString() else ""
+        license.text =
+            if (state is Loaded)
+                state.githubRepo.license?.name ?: "No license"
+            else ""
+        link.text =
+            if (state is Loaded) state.githubRepo.url.substringAfter("//") else ""
+
+        link.setOnClickListener {
+            if (state is Loaded) openUrl(state.githubRepo.url)
+        }
+
+        detailInfoLoadingPb.visibility = if (state is Loading) View.VISIBLE else View
+            .INVISIBLE
+    }
+
     private fun FragmentDetailInfoBinding.bindErrorScreen(
-        // binding error view
         visibility: Boolean = false,
         error: RepositoryError?,
     ) {
@@ -178,51 +235,15 @@ class DetailInfoFragment : Fragment() {
         detailInfoErrorImage.setImageDrawable(
             context?.let {
                 when (error) {
-                    is RepositoryError.NetworkError -> ContextCompat.getDrawable(it,
-                        R.drawable.ic_no_connection)
+                    is RepositoryError.NetworkError -> ContextCompat.getDrawable(
+                        it,
+                        R.drawable.ic_no_connection
+                    )
                     is RepositoryError.Error -> ContextCompat.getDrawable(it, R.drawable.ic_error)
                     else -> ContextCompat.getDrawable(it, R.drawable.ic_error)
                 }
             }
         )
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setHasOptionsMenu(true)
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.log_out_button, menu)
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            R.id.menu_action_logout -> {
-                viewModel.logOut()
-                navController.navigate(R.id.action_detailFragment_to_authFragment)
-                true
-            }
-            android.R.id.home -> {
-                navController.navigate(R.id.action_detailFragment_to_repositoriesListFragment)
-                true
-            }
-            else -> super.onOptionsItemSelected(item)
-        }
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        navController = Navigation.findNavController(view)
-
-        (requireActivity() as AppCompatActivity).supportActionBar?.apply {
-            title = repoName
-            setHomeAsUpIndicator(R.drawable.ic_arrow_left)
-            setDisplayHomeAsUpEnabled(true)
-            show()
-        }
-        markDownRenderer = MarkyMarkAndroid.getMarkyMark(requireActivity(), ContentfulFlavor(),
-            PicassoImageLoader(requireContext()))
     }
 
     private fun openUrl(url: String) {

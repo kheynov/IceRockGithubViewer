@@ -51,7 +51,11 @@ dependencies {
     implementation("androidx.core:core-ktx:1.8.0")
     implementation("androidx.appcompat:appcompat:1.4.2")
     implementation("com.google.android.material:material:1.6.1")
+
+    // ViewModel
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.1")
+
+    // LiveData
     implementation("androidx.lifecycle:lifecycle-livedata-core-ktx:2.4.1")
 
     // Hilt
@@ -101,5 +105,6 @@ dependencies {
     // SplashScreen API
     implementation("androidx.core:core-splashscreen:1.0.0-rc01")
 
+    // Picasso image loader
     implementation("com.squareup.picasso:picasso:2.8")
 }

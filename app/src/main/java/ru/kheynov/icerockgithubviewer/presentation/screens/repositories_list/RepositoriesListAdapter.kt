@@ -26,20 +26,6 @@ class RepositoriesListAdapter(private val onItemClick: (Int) -> Unit) :
         return ViewHolder(itemViewBinding)
     }
 
-    class ViewHolder(private val itemViewBinding: RepositoriesListItemBinding) : RecyclerView
-    .ViewHolder(itemViewBinding.root) {
-        fun bind(repo: Repo) {
-            itemViewBinding.repositoriesListItemTitle.text = repo.name
-
-            if (repo.description.isNullOrEmpty()) itemViewBinding.repositoriesListItemDescription
-                .visibility = View.GONE
-            else itemViewBinding.repositoriesListItemDescription.text = repo.description
-
-            itemViewBinding.repositoriesListItemLanguage.text = repo.language
-            itemViewBinding.repositoriesListItemLanguage.setTextColor(repo.color)
-        }
-    }
-
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
         val repoItem = items[position]
         viewHolder.bind(repoItem)
@@ -47,4 +33,20 @@ class RepositoriesListAdapter(private val onItemClick: (Int) -> Unit) :
     }
 
     override fun getItemCount() = items.size
+
+    inner class ViewHolder(private val itemViewBinding: RepositoriesListItemBinding) : RecyclerView
+    .ViewHolder(itemViewBinding.root) {
+        fun bind(repo: Repo) {
+            itemViewBinding.apply {
+                repositoriesListItemTitle.text = repo.name
+
+                repositoriesListItemDescription.visibility =
+                    if (repo.description.isNullOrEmpty()) View.GONE else View.VISIBLE
+
+                repositoriesListItemDescription.text = repo.description
+                repositoriesListItemLanguage.text = repo.language
+                repositoriesListItemLanguage.setTextColor(repo.color)
+            }
+        }
+    }
 }

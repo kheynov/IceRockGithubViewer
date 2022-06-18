@@ -2,7 +2,12 @@ package ru.kheynov.icerockgithubviewer.presentation.screens.repositories_list
 
 import android.os.Bundle
 import android.util.Log
-import android.view.*
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat.getColor
 import androidx.core.content.ContextCompat.getDrawable
@@ -17,9 +22,9 @@ import ru.kheynov.icerockgithubviewer.BuildConfig
 import ru.kheynov.icerockgithubviewer.R
 import ru.kheynov.icerockgithubviewer.data.entities.Repo
 import ru.kheynov.icerockgithubviewer.databinding.FragmentRepositoriesListBinding
+import ru.kheynov.icerockgithubviewer.error_types.RepositoryError
 import ru.kheynov.icerockgithubviewer.presentation.screens.detail_info.DetailInfoFragment
 import ru.kheynov.icerockgithubviewer.presentation.screens.repositories_list.RepositoriesListViewModel.State.*
-import ru.kheynov.icerockgithubviewer.error_types.RepositoryError
 
 
 private const val TAG = "RepositoriesListScreen"
@@ -54,8 +59,10 @@ class RepositoriesListFragment : Fragment() {
 
         viewModel.state.observe(viewLifecycleOwner) { state ->
 
-            if (BuildConfig.DEBUG) if (state is Loaded) Log.i(TAG,
-                "Repos list size: ${state.repos.size}")
+            if (BuildConfig.DEBUG) if (state is Loaded) Log.i(
+                TAG,
+                "Repos list size: ${state.repos.size}"
+            )
 
             binding.apply {
                 bindRepositoriesList(state)
@@ -66,30 +73,71 @@ class RepositoriesListFragment : Fragment() {
         return binding.root
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        // configuring action bar
+        (requireActivity() as AppCompatActivity).supportActionBar?.apply {
+            title = getString(R.string.repositories_label)
+            setDisplayHomeAsUpEnabled(false)
+            show()
+        }
+
+        navController = Navigation.findNavController(view)
+
+        recyclerView = binding.repositoriesListRecyclerView // setting up recycler view
+        recyclerView.layoutManager = LinearLayoutManager(context)
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.log_out_button, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        val id = item.itemId
+        if (id == R.id.menu_action_logout) {
+            viewModel.logOut()
+            navController.navigate(R.id.action_repositoriesListFragment_to_authFragment)
+            return true
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
+    private fun onListItemClick(repo: Repo) {
+        if (BuildConfig.DEBUG) Log.i(TAG, "Tapped on ${repo.name} element")
+        navController.navigate(
+            R.id.action_repositoriesListFragment_to_detailFragment,
+            DetailInfoFragment.createArguments(repoName = repo.name)
+        )
+    }
+
     private fun FragmentRepositoriesListBinding.bindRepositoriesList(
         state: RepositoriesListViewModel.State,
     ) {
-        this.apply {
-            repositoriesListLoadingPb.visibility =
-                if (state is Loading) View.VISIBLE else
-                    View.INVISIBLE
-
-            repositoriesListRecyclerView.visibility = if (state is Loaded) View.VISIBLE else
+        repositoriesListLoadingPb.visibility =
+            if (state is Loading) View.VISIBLE else
                 View.INVISIBLE
 
-            if (state is Loaded) {
-                val repositoriesListAdapter = RepositoriesListAdapter { position ->
-                    onListItemClick(state.repos[position])
-                }
-                // taking first 10 repositories
-                repositoriesListAdapter.items = state.repos
+        repositoriesListRecyclerView.visibility = if (state is Loaded) View.VISIBLE else
+            View.INVISIBLE
 
-                repositoriesListRecyclerView.adapter = repositoriesListAdapter
-            } else {
-                repositoriesListRecyclerView.adapter = null
+        if (state is Loaded) {
+            val repositoriesListAdapter = RepositoriesListAdapter { position ->
+                onListItemClick(state.repos[position])
             }
+            // taking first 10 repositories
+            repositoriesListAdapter.items = state.repos
+
+            repositoriesListRecyclerView.adapter = repositoriesListAdapter
+        } else {
+            repositoriesListRecyclerView.adapter = null
         }
     }
+
 
     private fun FragmentRepositoriesListBinding.bindErrorScreen(
         state: RepositoriesListViewModel.State,
@@ -140,58 +188,21 @@ class RepositoriesListFragment : Fragment() {
             else -> ""
         }
         repositoriesListErrorImage.setImageDrawable(when (state) {
-            is Error -> context?.let {
+            is Error -> context?.let { context ->
                 when (state.error) {
-                    is RepositoryError.NetworkError -> getDrawable(it,
-                        R.drawable.ic_no_connection)
-                    is RepositoryError.Error -> getDrawable(it, R.drawable.ic_error)
+                    is RepositoryError.NetworkError -> getDrawable(
+                        context,
+                        R.drawable.ic_no_connection
+                    )
+                    is RepositoryError.Error -> getDrawable(context, R.drawable.ic_error)
                 }
             }
             else -> context?.let {
-                getDrawable(it,
-                    R.drawable.ic_empty_repository_list)
+                getDrawable(
+                    it,
+                    R.drawable.ic_empty_repository_list
+                )
             }
         })
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        // configuring action bar
-        (requireActivity() as AppCompatActivity).supportActionBar?.apply {
-            title = getString(R.string.repositories_label)
-            setDisplayHomeAsUpEnabled(false)
-            show()
-        }
-
-        navController = Navigation.findNavController(view)
-
-        recyclerView = binding.repositoriesListRecyclerView // setting up recycler view
-        recyclerView.layoutManager = LinearLayoutManager(context)
-    }
-
-    private fun onListItemClick(repo: Repo) {
-        if (BuildConfig.DEBUG) Log.i(TAG, "Tapped on ${repo.name} element")
-        navController.navigate(R.id.action_repositoriesListFragment_to_detailFragment,
-            DetailInfoFragment.createArguments(repoName = repo.name))
-    }
-
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setHasOptionsMenu(true)
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.log_out_button, menu)
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        val id = item.itemId
-        if (id == R.id.menu_action_logout) {
-            viewModel.logOut()
-            navController.navigate(R.id.action_repositoriesListFragment_to_authFragment)
-            return true
-        }
-        return super.onOptionsItemSelected(item)
     }
 }

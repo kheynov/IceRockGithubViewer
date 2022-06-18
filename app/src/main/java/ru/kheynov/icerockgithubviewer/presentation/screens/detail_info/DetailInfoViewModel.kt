@@ -6,7 +6,12 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import ru.kheynov.icerockgithubviewer.BuildConfig
 import ru.kheynov.icerockgithubviewer.data.entities.RepoDetails
 import ru.kheynov.icerockgithubviewer.data.repository.AppRepository
@@ -55,11 +60,11 @@ class DetailInfoViewModel @Inject constructor(
         if (BuildConfig.DEBUG) Log.e(TAG, "Error: ", throwable)
         if (throwable.message?.contains("hostname") == true) {
             _state.postValue(State.Error(RepositoryError.NetworkError))
-
-        } else {
-            _state.postValue(State.Error(RepositoryError.Error(throwable.message.toString())))
+            return@CoroutineExceptionHandler
         }
+        _state.postValue(State.Error(RepositoryError.Error(throwable.message.toString())))
     }
+
     private val fetchReadmeExceptionHandler = CoroutineExceptionHandler { _, throwable ->
         if (BuildConfig.DEBUG) Log.e(TAG, "Error: ", throwable)
         if (throwable.message?.contains("hostname") == true) {
@@ -84,20 +89,20 @@ class DetailInfoViewModel @Inject constructor(
                 withContext(Dispatchers.Main) {
                     if (response.isSuccessful) {
                         _state.postValue(State.Loaded(response.body()!!))
-                        if (response.body() is RepoDetails) response.body()?.let {
+                        if (response.body() is RepoDetails) response.body()?.let { repo ->
                             fetchReadme(
-                                repositoryName = it.name,
-                                defaultBranch = it.defaultBranch,
-                                owner = it.owner.login
+                                repositoryName = repo.name,
+                                defaultBranch = repo.defaultBranch,
+                                owner = repo.owner.login
                             )
                         }
-                    } else {
-                        _state.postValue(
-                            State.Error(
-                                RepositoryError.Error(response.code().toString())
-                            )
-                        )
+                        return@withContext
                     }
+                    _state.postValue(
+                        State.Error(
+                            RepositoryError.Error(response.code().toString())
+                        )
+                    )
                 }
             }
     }
@@ -114,14 +119,19 @@ class DetailInfoViewModel @Inject constructor(
                 withContext(Dispatchers.Main) {
                     if (response.isSuccessful) {
                         _readmeState.postValue(ReadmeState.Loaded(response.body()!!.content))
-                    } else {
-                        if (response.code() == 404) {
-                            _readmeState.postValue(ReadmeState.Empty)
-                        } else {
-                            _readmeState.postValue(ReadmeState.Error(RepositoryError.Error(
-                                response.code().toString())))
-                        }
+                        return@withContext
                     }
+                    if (response.code() == 404) {
+                        _readmeState.postValue(ReadmeState.Empty)
+                        return@withContext
+                    }
+                    _readmeState.postValue(
+                        ReadmeState.Error(
+                            RepositoryError.Error(
+                                response.code().toString()
+                            )
+                        )
+                    )
                 }
             }
     }

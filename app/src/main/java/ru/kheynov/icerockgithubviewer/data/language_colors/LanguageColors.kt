@@ -3,7 +3,8 @@ package ru.kheynov.icerockgithubviewer.data.language_colors
 import android.graphics.Color
 
 object LanguageColors {
-    val colorsOfLanguages = mapOf( // Color map for some of programming languages
+    val colorsOfLanguages = mapOf(
+        // Color map for some of programming languages
         "Kotlin" to Color.parseColor("#A97BFF"),
         "JavaScript" to Color.parseColor("#FFf1e05a"),
         "Python" to Color.parseColor("#3572A5"),

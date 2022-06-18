@@ -8,6 +8,7 @@ import android.view.View.INVISIBLE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -49,6 +50,10 @@ class AuthFragment : Fragment() {
                         R.string.error_message
                     ) else ""
                 signInButton.isEnabled = state !is Loading
+
+                authInputText.addTextChangedListener {
+                    viewModel.enterToken(it.toString())
+                }
             }
         }
 
@@ -72,7 +77,7 @@ class AuthFragment : Fragment() {
 
         binding.authInputText.setText(viewModel.token.value ?: "")
         lifecycleScope.launch {
-            viewModel.actions.collect { handleAction(it) }
+            viewModel.actions.collect(::handleAction)
         }
     }
 
@@ -89,9 +94,7 @@ class AuthFragment : Fragment() {
                     code = action.HttpCode
                 )
                 activity?.supportFragmentManager?.let {
-                    errorDialogFragment.show(
-                        it, getString(R.string.error)
-                    )
+                    errorDialogFragment.show(it, getString(R.string.error))
                 }
                 binding.signInButton.isEnabled = true
             }

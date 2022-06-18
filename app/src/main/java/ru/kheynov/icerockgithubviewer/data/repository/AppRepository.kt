@@ -15,17 +15,17 @@ class AppRepository @Inject constructor(
     private val githubApi: GithubApi,
     private val keyValueStorage: KeyValueStorage,
 ) {
-    suspend fun getRepositories(): Response<List<Repo>> = githubApi.getRepositoriesList(
-        authHeader = "Bearer ${keyValueStorage.authToken}",
-        userName = keyValueStorage.userName!!
-    )
-
     val isAuthorized: Boolean
         get() = keyValueStorage.isAuthorized
 
     fun logOut() {
         keyValueStorage.isAuthorized = false
     }
+
+    suspend fun getRepositories(): Response<List<Repo>> = githubApi.getRepositoriesList(
+        authHeader = "Bearer ${keyValueStorage.authToken}",
+        userName = keyValueStorage.userName!!
+    )
 
     suspend fun getRepository(repoId: String): Response<RepoDetails> = githubApi
         .getRepositoryDetails(

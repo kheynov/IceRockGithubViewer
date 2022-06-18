@@ -6,10 +6,15 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import ru.kheynov.icerockgithubviewer.BuildConfig
 import ru.kheynov.icerockgithubviewer.data.repository.AppRepository
 import ru.kheynov.icerockgithubviewer.error_types.AuthError
@@ -85,21 +90,21 @@ class AuthViewModel @Inject constructor(
                 if (response.isSuccessful) {
                     _state.postValue(State.Idle)
                     _actions.send(Action.RouteToMain)
-                } else {
-                    Log.i(TAG, response.code().toString())
-                    if (response.code() == 401) {
-                        _state.postValue(State.InvalidInput)
-                    } else {
-                        if (BuildConfig.DEBUG) Log.i(TAG, "Response code: ${response.code()}")
-                        _actions.send(
-                            Action.ShowError(
-                                error = AuthError.HttpAuthError,
-                                HttpCode = response.code()
-                            )
-                        )
-                        _state.postValue(State.Idle)
-                    }
+                    return@withContext
                 }
+
+                if (response.code() == 401) {
+                    _state.postValue(State.InvalidInput)
+                    return@withContext
+                }
+                if (BuildConfig.DEBUG) Log.i(TAG, "Response code: ${response.code()}")
+                _actions.send(
+                    Action.ShowError(
+                        error = AuthError.HttpAuthError,
+                        HttpCode = response.code()
+                    )
+                )
+                _state.postValue(State.Idle)
             }
         }
     }
