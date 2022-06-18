@@ -221,7 +221,7 @@ class DetailInfoFragment : Fragment() {
             setDisplayHomeAsUpEnabled(true)
             show()
         }
-        markDownRenderer = MarkyMarkAndroid.getMarkyMark(activity!!, ContentfulFlavor(),
+        markDownRenderer = MarkyMarkAndroid.getMarkyMark(requireActivity(), ContentfulFlavor(),
             PicassoImageLoader(requireContext()))
     }
 
