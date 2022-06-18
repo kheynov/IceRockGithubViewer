@@ -14,8 +14,8 @@ android {
         applicationId = "ru.kheynov.icerockgithubviewer"
         minSdk = 21
         targetSdk = 31
-        versionCode = 7
-        versionName = "1.2.6"
+        versionCode = 8
+        versionName = "1.3"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
