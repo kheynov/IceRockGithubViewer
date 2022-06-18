@@ -89,7 +89,9 @@ dependencies {
     implementation("androidx.navigation:navigation-ui-ktx:$navVersion")
 
     // markdown library
-    implementation("com.github.M2Mobi.MarkyMark-Android:android:0.2.5")
+    implementation("com.github.M2Mobi.MarkyMark-Android:android:0.2.5") {
+        exclude(group = "com.github.M2Mobi")
+    }
     implementation("com.github.m2mobi.MarkyMark-Android:contentful:0.2.5")
 
     // SplashScreen API
