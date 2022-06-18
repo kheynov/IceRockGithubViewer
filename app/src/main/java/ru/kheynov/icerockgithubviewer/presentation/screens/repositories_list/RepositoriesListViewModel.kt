@@ -52,7 +52,7 @@ class RepositoriesListViewModel @Inject constructor(
                         _state.postValue(State.Empty)
                     } else {
                         _state.postValue( // Loading first 10 repositories ordered by update time
-                            State.Loaded(response.body()?.take(10) ?: emptyList())
+                            State.Loaded(response.body() ?: emptyList())
                         )
                     }
                 } else {

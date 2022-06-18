@@ -20,9 +20,6 @@ class AppRepository @Inject constructor(
         userName = keyValueStorage.userName!!
     )
 
-    val token: String?
-        get() = keyValueStorage.authToken
-
     val isAuthorized: Boolean
         get() = keyValueStorage.isAuthorized
 
