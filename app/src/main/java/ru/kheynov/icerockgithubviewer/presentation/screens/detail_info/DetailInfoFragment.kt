@@ -107,21 +107,17 @@ class DetailInfoFragment : Fragment() {
         viewModel.readmeState.observe(viewLifecycleOwner) { state ->
             Log.i(TAG, state.toString())
             binding.apply {
-                repositoryDetailReadmeBlock.visibility =
+                readmeText.visibility =
                     if (state !is ReadmeState.Loading) View.VISIBLE else View.INVISIBLE
 
-                if (state is ReadmeState.Empty) {
-                    readmeText.addView(
-                        TextView(requireContext()).apply {
-                            text = context.getString(R.string.no_readme)
-                        }
-                    )
-                }
+                noReadmeLabel.visibility =
+                    if (state is ReadmeState.Empty) View.VISIBLE else View.INVISIBLE
 
                 if (state is ReadmeState.Loaded) {
                     readmeText.removeAllViews()
                     val paragraphs = markDownRenderer.parseMarkdown(state.markdownToString())
-                    for(paragraph in paragraphs){
+                    for (paragraph in paragraphs) {
+                        if (paragraph is TextView) Log.i(TAG, "Paragraph: ${paragraph.text}")
                         readmeText.addView(paragraph)
                     }
                 }

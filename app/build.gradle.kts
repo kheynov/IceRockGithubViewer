@@ -8,6 +8,20 @@ plugins {
 }
 
 android {
+    signingConfigs {
+        getByName("debug") {
+            storeFile = file("/Users/kheynov/code/kheynovAndroidKeyStore.jks")
+            storePassword = "6Q5DPhJ2uyk="
+            keyAlias = "kheynov"
+            keyPassword = "6Q5DPhJ2uyk="
+        }
+        create("release") {
+            storeFile = file("/Users/kheynov/code/kheynovAndroidKeyStore.jks")
+            storePassword = "6Q5DPhJ2uyk="
+            keyAlias = "kheynov"
+            keyPassword = "6Q5DPhJ2uyk="
+        }
+    }
     compileSdk = 31
 
     defaultConfig {
