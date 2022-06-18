@@ -105,7 +105,7 @@ class DetailInfoFragment : Fragment() {
         }
 
         viewModel.readmeState.observe(viewLifecycleOwner) { state ->
-            Log.i(TAG, state.toString())
+            if (BuildConfig.DEBUG) Log.i(TAG, state.toString())
             binding.apply {
                 readmeText.visibility =
                     if (state !is ReadmeState.Loading) View.VISIBLE else View.INVISIBLE
