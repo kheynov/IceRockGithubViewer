@@ -1,5 +1,3 @@
-![build](https://github.com/kheynov/IceRockGithubViewer/actions/workflows/android.yml/badge.svg)
-
 # Github Viewer
 
 Тестовое задание IceRock
