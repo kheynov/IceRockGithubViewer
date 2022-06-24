@@ -2,7 +2,6 @@ package ru.kheynov.icerockgithubviewer.presentation.screens.detail_info
 
 import android.util.Base64
 import android.util.Log
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -28,13 +27,11 @@ class DetailInfoViewModel @Inject constructor(
     private var fetchRepositoryDetailsJob: Job? = null
     private var fetchRepositoryReadmeJob: Job? = null
 
-    private val _state = MutableLiveData<State>()
-    val state: LiveData<State>
-        get() = _state
+    var state = MutableLiveData<State>()
+        private set
 
-    private val _readmeState = MutableLiveData<ReadmeState>()
-    val readmeState: LiveData<ReadmeState>
-        get() = _readmeState
+    var readmeState = MutableLiveData<ReadmeState>()
+        private set
 
     sealed interface State {
         object Loading : State
@@ -59,18 +56,18 @@ class DetailInfoViewModel @Inject constructor(
     private val fetchRepositoryExceptionHandler = CoroutineExceptionHandler { _, throwable ->
         if (BuildConfig.DEBUG) Log.e(TAG, "Error: ", throwable)
         if (throwable.message?.contains("hostname") == true) {
-            _state.postValue(State.Error(RepositoryError.NetworkError))
+            state.postValue(State.Error(RepositoryError.NetworkError))
             return@CoroutineExceptionHandler
         }
-        _state.postValue(State.Error(RepositoryError.Error(throwable.message.toString())))
+        state.postValue(State.Error(RepositoryError.Error(throwable.message.toString())))
     }
 
     private val fetchReadmeExceptionHandler = CoroutineExceptionHandler { _, throwable ->
         if (BuildConfig.DEBUG) Log.e(TAG, "Error: ", throwable)
         if (throwable.message?.contains("hostname") == true) {
-            _readmeState.postValue(ReadmeState.Error(RepositoryError.NetworkError))
+            readmeState.postValue(ReadmeState.Error(RepositoryError.NetworkError))
         } else {
-            _readmeState.postValue(ReadmeState.Error(RepositoryError.Error(throwable.message.toString())))
+            readmeState.postValue(ReadmeState.Error(RepositoryError.Error(throwable.message.toString())))
         }
     }
 
@@ -84,11 +81,11 @@ class DetailInfoViewModel @Inject constructor(
     fun fetchRepository(repositoryName: String) {
         fetchRepositoryDetailsJob =
             CoroutineScope(Dispatchers.IO + fetchRepositoryExceptionHandler).launch {
-                _state.postValue(State.Loading)
+                state.postValue(State.Loading)
                 val response = repository.getRepository(repositoryName)
                 withContext(Dispatchers.Main) {
                     if (response.isSuccessful) {
-                        _state.postValue(State.Loaded(response.body()!!))
+                        state.postValue(State.Loaded(response.body()!!))
                         if (response.body() is RepoDetails) response.body()?.let { repo ->
                             fetchReadme(
                                 repositoryName = repo.name,
@@ -98,7 +95,7 @@ class DetailInfoViewModel @Inject constructor(
                         }
                         return@withContext
                     }
-                    _state.postValue(
+                    state.postValue(
                         State.Error(
                             RepositoryError.Error(response.code().toString())
                         )
@@ -110,7 +107,7 @@ class DetailInfoViewModel @Inject constructor(
     fun fetchReadme(repositoryName: String, defaultBranch: String, owner: String) {
         fetchRepositoryReadmeJob =
             CoroutineScope(Dispatchers.IO + fetchReadmeExceptionHandler).launch {
-                _readmeState.postValue(ReadmeState.Loading)
+                readmeState.postValue(ReadmeState.Loading)
                 val response = repository.getRepositoryReadme(
                     ownerName = owner,
                     repositoryName = repositoryName,
@@ -118,14 +115,14 @@ class DetailInfoViewModel @Inject constructor(
                 )
                 withContext(Dispatchers.Main) {
                     if (response.isSuccessful) {
-                        _readmeState.postValue(ReadmeState.Loaded(response.body()!!.content))
+                        readmeState.postValue(ReadmeState.Loaded(response.body()!!.content))
                         return@withContext
                     }
                     if (response.code() == 404) {
-                        _readmeState.postValue(ReadmeState.Empty)
+                        readmeState.postValue(ReadmeState.Empty)
                         return@withContext
                     }
-                    _readmeState.postValue(
+                    readmeState.postValue(
                         ReadmeState.Error(
                             RepositoryError.Error(
                                 response.code().toString()

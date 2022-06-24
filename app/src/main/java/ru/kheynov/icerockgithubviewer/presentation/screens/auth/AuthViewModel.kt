@@ -1,7 +1,6 @@
 package ru.kheynov.icerockgithubviewer.presentation.screens.auth
 
 import android.util.Log
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -29,14 +28,11 @@ class AuthViewModel @Inject constructor(
 
     private val tokenValidationPattern = "^[a-z_0-9]+$".toRegex(RegexOption.IGNORE_CASE)
 
-    private val _token = MutableLiveData<String>()
-    val token: LiveData<String>
-        get() = _token
+    var token = MutableLiveData<String>()
+        private set
 
-
-    private val _state = MutableLiveData<State>()
-    val state: LiveData<State>
-        get() = _state
+    var state = MutableLiveData<State>()
+        private set
 
 
     private val _actions: Channel<Action> = Channel(Channel.BUFFERED)
@@ -76,25 +72,25 @@ class AuthViewModel @Inject constructor(
 
     fun onSignInButtonPressed() {
         signInJob = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            _state.postValue(State.Loading)
+            state.postValue(State.Loading)
 
             val matches = token.value.toString().matches(tokenValidationPattern)
             Log.i(TAG, "Matches: $matches")
             if (!token.value.toString().matches(tokenValidationPattern)) {
-                _state.postValue(State.InvalidInput)
+                state.postValue(State.InvalidInput)
                 return@launch
             }
 
-            val response = repository.signIn(_token.value.toString())
+            val response = repository.signIn(token.value.toString())
             withContext(Dispatchers.Main) {
                 if (response.isSuccessful) {
-                    _state.postValue(State.Idle)
+                    state.postValue(State.Idle)
                     _actions.send(Action.RouteToMain)
                     return@withContext
                 }
 
                 if (response.code() == 401) {
-                    _state.postValue(State.InvalidInput)
+                    state.postValue(State.InvalidInput)
                     return@withContext
                 }
                 if (BuildConfig.DEBUG) Log.i(TAG, "Response code: ${response.code()}")
@@ -104,13 +100,13 @@ class AuthViewModel @Inject constructor(
                         HttpCode = response.code()
                     )
                 )
-                _state.postValue(State.Idle)
+                state.postValue(State.Idle)
             }
         }
     }
 
     fun enterToken(token: String) {
-        _token.value = token
+        this.token.value = token
     }
 
     override fun onCleared() {

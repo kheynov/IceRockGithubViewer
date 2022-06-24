@@ -1,7 +1,6 @@
 package ru.kheynov.icerockgithubviewer.presentation.screens.repositories_list
 
 import android.util.Log
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -24,9 +23,8 @@ class RepositoriesListViewModel @Inject constructor(
     private val repository: AppRepository,
 ) : ViewModel() {
 
-    private val _state = MutableLiveData<State>()
-    val state: LiveData<State>
-        get() = _state
+    var state = MutableLiveData<State>()
+        private set
 
     sealed interface State {
         object Loading : State
@@ -42,29 +40,29 @@ class RepositoriesListViewModel @Inject constructor(
 
         // If network error
         if (throwable.message?.let { it.contains("hostname") || it.contains("timeout") } == true) {
-            _state.postValue(State.Error(RepositoryError.NetworkError))
+            state.postValue(State.Error(RepositoryError.NetworkError))
             return@CoroutineExceptionHandler
         }
         // if error not network-based
-        _state.postValue(State.Error(RepositoryError.Error(throwable.message.toString())))
+        state.postValue(State.Error(RepositoryError.Error(throwable.message.toString())))
     }
 
     fun fetchRepositories() {
         fetchRepositoriesJob = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            _state.postValue(State.Loading)
+            state.postValue(State.Loading)
             val response = repository.getRepositories()
             withContext(Dispatchers.Main) {
                 if (response.isSuccessful) {
                     if (response.body().isNullOrEmpty()) {
-                        _state.postValue(State.Empty)
+                        state.postValue(State.Empty)
                         return@withContext
                     }
-                    _state.postValue( // Loading first 10 repositories ordered by update time
+                    state.postValue( // Loading first 10 repositories ordered by update time
                         State.Loaded(response.body()?.take(10) ?: emptyList())
                     )
                     return@withContext
                 }
-                _state.postValue(
+                state.postValue(
                     State.Error(RepositoryError.Error(response.code().toString()))
                 )
             }
