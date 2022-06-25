@@ -48,7 +48,8 @@ class AuthViewModel @Inject constructor(
 
     sealed interface Action {
         data class ShowError(
-            val error: AuthError, val message: String? = null,
+            val error: AuthError,
+            val message: String? = null,
             val HttpCode: Int? = null,
         ) : Action
 
