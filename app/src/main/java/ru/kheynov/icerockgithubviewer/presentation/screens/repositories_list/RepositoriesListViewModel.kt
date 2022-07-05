@@ -13,7 +13,8 @@ import kotlinx.coroutines.withContext
 import ru.kheynov.icerockgithubviewer.BuildConfig
 import ru.kheynov.icerockgithubviewer.data.entities.Repo
 import ru.kheynov.icerockgithubviewer.data.repository.AppRepository
-import ru.kheynov.icerockgithubviewer.error_types.RepositoryError
+import ru.kheynov.icerockgithubviewer.error_types.ApiError
+import ru.kheynov.icerockgithubviewer.error_types.ErrorType
 import javax.inject.Inject
 
 private const val TAG = "RepositoriesListVM"
@@ -29,7 +30,7 @@ class RepositoriesListViewModel @Inject constructor(
     sealed interface State {
         object Loading : State
         data class Loaded(val repos: List<Repo>) : State
-        data class Error(val error: RepositoryError) : State
+        data class Error(val error: ApiError) : State
         object Empty : State
     }
 
@@ -40,11 +41,11 @@ class RepositoriesListViewModel @Inject constructor(
 
         // If network error
         if (throwable.message?.let { it.contains("hostname") || it.contains("timeout") } == true) {
-            state.postValue(State.Error(RepositoryError.NetworkError))
+            state.postValue(State.Error(ApiError.NetworkError(ErrorType.NetworkError)))
             return@CoroutineExceptionHandler
         }
         // if error not network-based
-        state.postValue(State.Error(RepositoryError.Error(throwable.message.toString())))
+        state.postValue(State.Error(ApiError.Error(throwable.message.toString())))
     }
 
     fun fetchRepositories() {
@@ -63,7 +64,7 @@ class RepositoriesListViewModel @Inject constructor(
                     return@withContext
                 }
                 state.postValue(
-                    State.Error(RepositoryError.Error(response.code().toString()))
+                    State.Error(ApiError.NetworkError(ErrorType.HttpError(response.code())))
                 )
             }
         }

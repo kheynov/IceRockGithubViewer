@@ -25,7 +25,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import ru.kheynov.icerockgithubviewer.BuildConfig
 import ru.kheynov.icerockgithubviewer.R
 import ru.kheynov.icerockgithubviewer.databinding.FragmentDetailInfoBinding
-import ru.kheynov.icerockgithubviewer.error_types.RepositoryError
+import ru.kheynov.icerockgithubviewer.error_types.ApiError
 import ru.kheynov.icerockgithubviewer.presentation.screens.detail_info.DetailInfoViewModel.ReadmeState
 import ru.kheynov.icerockgithubviewer.presentation.screens.detail_info.DetailInfoViewModel.State.Loaded
 import ru.kheynov.icerockgithubviewer.presentation.screens.detail_info.DetailInfoViewModel.State.Loading
@@ -145,7 +145,7 @@ class DetailInfoFragment : Fragment() {
     }
 
     private fun FragmentDetailInfoBinding.bindReadme(
-        state: ReadmeState
+        state: ReadmeState,
     ) {
         readmeText.visibility =
             if (state !is ReadmeState.Loading) View.VISIBLE else View.INVISIBLE
@@ -166,7 +166,7 @@ class DetailInfoFragment : Fragment() {
     }
 
     private fun FragmentDetailInfoBinding.bindDetailInfo(
-        state: DetailInfoViewModel.State
+        state: DetailInfoViewModel.State,
     ) {
         repositoryDetailInfoBlock.visibility =
             if (state is Loaded) View.VISIBLE else View
@@ -194,14 +194,14 @@ class DetailInfoFragment : Fragment() {
 
     private fun FragmentDetailInfoBinding.bindErrorScreen(
         visibility: Boolean = false,
-        error: RepositoryError?,
+        error: ApiError?,
     ) {
         detailInfoErrorButton.apply {
             setOnClickListener {
                 viewModel.fetchRepository(repoName)
             }
             text = when (error) {
-                is RepositoryError.NetworkError -> getString(R.string.retry_button_label)
+                is ApiError.NetworkError -> getString(R.string.retry_button_label)
                 else -> getString(R.string.refresh_button_label)
             }
         }
@@ -214,20 +214,20 @@ class DetailInfoFragment : Fragment() {
 
         detailInfoErrorTitle.apply {
             text = when (error) {
-                is RepositoryError.NetworkError -> getString(R.string.connection_error)
+                is ApiError.NetworkError -> getString(R.string.connection_error)
                 else -> getString(R.string.error)
             }
             setTextColor(ContextCompat.getColor(requireContext(), R.color.error))
         }
 
         detailInfoErrorDescription.text = when (error) {
-            is RepositoryError.NetworkError -> {
+            is ApiError.NetworkError -> {
                 getString(R.string.check_your_internet_connection)
             }
             else -> {
                 getString(
                     R.string.error_repositories,
-                    if (error is RepositoryError.Error) error.message else "",
+                    if (error is ApiError.Error) error.message else "",
                 )
             }
         }
@@ -235,11 +235,11 @@ class DetailInfoFragment : Fragment() {
         detailInfoErrorImage.setImageDrawable(
             context?.let {
                 when (error) {
-                    is RepositoryError.NetworkError -> ContextCompat.getDrawable(
+                    is ApiError.NetworkError -> ContextCompat.getDrawable(
                         it,
                         R.drawable.ic_no_connection
                     )
-                    is RepositoryError.Error -> ContextCompat.getDrawable(it, R.drawable.ic_error)
+                    is ApiError.Error -> ContextCompat.getDrawable(it, R.drawable.ic_error)
                     else -> ContextCompat.getDrawable(it, R.drawable.ic_error)
                 }
             }

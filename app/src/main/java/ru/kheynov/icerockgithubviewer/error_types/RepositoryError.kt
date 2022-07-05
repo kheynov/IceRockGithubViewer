@@ -1,6 +1,6 @@
 package ru.kheynov.icerockgithubviewer.error_types
 
-sealed interface RepositoryError {
-    object NetworkError : RepositoryError
-    data class Error(val message: String) : RepositoryError
+sealed interface ApiError {
+    data class NetworkError(val errorType: ErrorType?) : ApiError
+    data class Error(val message: String?) : ApiError
 }

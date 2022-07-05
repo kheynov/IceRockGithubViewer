@@ -14,7 +14,8 @@ import kotlinx.coroutines.withContext
 import ru.kheynov.icerockgithubviewer.BuildConfig
 import ru.kheynov.icerockgithubviewer.data.entities.RepoDetails
 import ru.kheynov.icerockgithubviewer.data.repository.AppRepository
-import ru.kheynov.icerockgithubviewer.error_types.RepositoryError
+import ru.kheynov.icerockgithubviewer.error_types.ApiError
+import ru.kheynov.icerockgithubviewer.error_types.ErrorType
 import javax.inject.Inject
 
 private const val TAG = "DetailInfoVM"
@@ -35,7 +36,7 @@ class DetailInfoViewModel @Inject constructor(
 
     sealed interface State {
         object Loading : State
-        data class Error(val error: RepositoryError) : State
+        data class Error(val error: ApiError) : State
 
         data class Loaded(
             val githubRepo: RepoDetails,
@@ -45,7 +46,7 @@ class DetailInfoViewModel @Inject constructor(
     sealed interface ReadmeState {
         object Loading : ReadmeState
         object Empty : ReadmeState
-        data class Error(val error: RepositoryError) : ReadmeState
+        data class Error(val error: ApiError) : ReadmeState
         data class Loaded(val markdown: String) : ReadmeState {
             fun markdownToString(): String {
                 return String(Base64.decode(markdown, Base64.DEFAULT), charset("UTF-8"))
@@ -56,18 +57,18 @@ class DetailInfoViewModel @Inject constructor(
     private val fetchRepositoryExceptionHandler = CoroutineExceptionHandler { _, throwable ->
         if (BuildConfig.DEBUG) Log.e(TAG, "Error: ", throwable)
         if (throwable.message?.contains("hostname") == true) {
-            state.postValue(State.Error(RepositoryError.NetworkError))
+            state.postValue(State.Error(ApiError.NetworkError(ErrorType.NetworkError)))
             return@CoroutineExceptionHandler
         }
-        state.postValue(State.Error(RepositoryError.Error(throwable.message.toString())))
+        state.postValue(State.Error(ApiError.Error(throwable.message.toString())))
     }
 
     private val fetchReadmeExceptionHandler = CoroutineExceptionHandler { _, throwable ->
         if (BuildConfig.DEBUG) Log.e(TAG, "Error: ", throwable)
         if (throwable.message?.contains("hostname") == true) {
-            readmeState.postValue(ReadmeState.Error(RepositoryError.NetworkError))
+            readmeState.postValue(ReadmeState.Error(ApiError.NetworkError(ErrorType.NetworkError)))
         } else {
-            readmeState.postValue(ReadmeState.Error(RepositoryError.Error(throwable.message.toString())))
+            readmeState.postValue(ReadmeState.Error(ApiError.Error(throwable.message.toString())))
         }
     }
 
@@ -97,7 +98,7 @@ class DetailInfoViewModel @Inject constructor(
                     }
                     state.postValue(
                         State.Error(
-                            RepositoryError.Error(response.code().toString())
+                            ApiError.Error(response.code().toString())
                         )
                     )
                 }
@@ -124,7 +125,7 @@ class DetailInfoViewModel @Inject constructor(
                     }
                     readmeState.postValue(
                         ReadmeState.Error(
-                            RepositoryError.Error(
+                            ApiError.Error(
                                 response.code().toString()
                             )
                         )
