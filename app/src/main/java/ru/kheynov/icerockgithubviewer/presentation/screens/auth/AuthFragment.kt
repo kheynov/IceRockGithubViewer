@@ -91,7 +91,7 @@ class AuthFragment : Fragment() {
                 if (BuildConfig.DEBUG) Log.i(TAG, action.message.toString())
                 val errorDialogFragment = ErrorDialogFragment.create(
                     error = action.error,
-                    code = action.HttpCode
+                    code = action.httpCode
                 )
                 activity?.supportFragmentManager?.let {
                     errorDialogFragment.show(it, getString(R.string.error))

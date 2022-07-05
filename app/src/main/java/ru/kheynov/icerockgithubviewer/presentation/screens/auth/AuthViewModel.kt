@@ -16,7 +16,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import ru.kheynov.icerockgithubviewer.BuildConfig
 import ru.kheynov.icerockgithubviewer.data.repository.AppRepository
-import ru.kheynov.icerockgithubviewer.error_types.AuthError
+import ru.kheynov.icerockgithubviewer.error_types.ApiError
+import ru.kheynov.icerockgithubviewer.error_types.ErrorType
 import javax.inject.Inject
 
 private const val TAG = "AuthViewModel"
@@ -48,9 +49,9 @@ class AuthViewModel @Inject constructor(
 
     sealed interface Action {
         data class ShowError(
-            val error: AuthError,
+            val error: ApiError,
             val message: String? = null,
-            val HttpCode: Int? = null,
+            val httpCode: Int? = null,
         ) : Action
 
         object RouteToMain : Action
@@ -64,7 +65,7 @@ class AuthViewModel @Inject constructor(
         viewModelScope.launch {
             _actions.send(
                 Action.ShowError(
-                    error = AuthError.NetworkAuthError,
+                    error = ApiError.NetworkError(ErrorType.NetworkError),
                     message = throwable.localizedMessage
                 )
             )
@@ -97,10 +98,9 @@ class AuthViewModel @Inject constructor(
                 if (BuildConfig.DEBUG) Log.i(TAG, "Response code: ${response.code()}")
                 _actions.send(
                     Action.ShowError(
-                        error = AuthError.HttpAuthError,
-                        HttpCode = response.code()
-                    )
-                )
+                        error = ApiError.NetworkError(ErrorType.HttpError(response.code())),
+                        httpCode = response.code()
+                    ))
                 state.postValue(State.Idle)
             }
         }

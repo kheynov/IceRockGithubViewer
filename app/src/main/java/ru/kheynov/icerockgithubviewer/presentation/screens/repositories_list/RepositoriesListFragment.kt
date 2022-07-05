@@ -22,7 +22,7 @@ import ru.kheynov.icerockgithubviewer.BuildConfig
 import ru.kheynov.icerockgithubviewer.R
 import ru.kheynov.icerockgithubviewer.data.entities.Repo
 import ru.kheynov.icerockgithubviewer.databinding.FragmentRepositoriesListBinding
-import ru.kheynov.icerockgithubviewer.error_types.RepositoryError
+import ru.kheynov.icerockgithubviewer.error_types.ApiError
 import ru.kheynov.icerockgithubviewer.presentation.screens.detail_info.DetailInfoFragment
 import ru.kheynov.icerockgithubviewer.presentation.screens.repositories_list.RepositoriesListViewModel.State.*
 
@@ -147,7 +147,7 @@ class RepositoriesListFragment : Fragment() {
                 viewModel.fetchRepositories()
             }
             text = if (state is Error) when (state.error) {
-                is RepositoryError.NetworkError -> getString(R.string.retry_button_label)
+                is ApiError.NetworkError -> getString(R.string.retry_button_label)
                 else -> getString(R.string.refresh_button_label)
             } else getString(R.string.refresh_button_label)
         }
@@ -159,8 +159,8 @@ class RepositoriesListFragment : Fragment() {
         repositoriesListErrorTitle.apply {
             text = when (state) {
                 is Error -> when (state.error) {
-                    is RepositoryError.Error -> getString(R.string.error)
-                    is RepositoryError.NetworkError -> getString(R.string.connection_error)
+                    is ApiError.Error -> getString(R.string.error)
+                    is ApiError.NetworkError -> getString(R.string.connection_error)
                 }
                 is Empty -> getString(R.string.empty_message)
                 else -> ""
@@ -174,10 +174,10 @@ class RepositoriesListFragment : Fragment() {
         }
         repositoriesListErrorDescription.text = when (state) {
             is Error -> when (state.error) {
-                is RepositoryError.NetworkError -> {
+                is ApiError.NetworkError -> {
                     getString(R.string.check_your_internet_connection)
                 }
-                is RepositoryError.Error -> {
+                is ApiError.Error -> {
                     getString(
                         R.string.error_repositories,
                         state.error.message,
@@ -190,11 +190,11 @@ class RepositoriesListFragment : Fragment() {
         repositoriesListErrorImage.setImageDrawable(when (state) {
             is Error -> context?.let { context ->
                 when (state.error) {
-                    is RepositoryError.NetworkError -> getDrawable(
+                    is ApiError.NetworkError -> getDrawable(
                         context,
                         R.drawable.ic_no_connection
                     )
-                    is RepositoryError.Error -> getDrawable(context, R.drawable.ic_error)
+                    is ApiError.Error -> getDrawable(context, R.drawable.ic_error)
                 }
             }
             else -> context?.let {
