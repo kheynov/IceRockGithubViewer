@@ -14,8 +14,8 @@ android {
         applicationId = "ru.kheynov.icerockgithubviewer"
         minSdk = 21
         targetSdk = 31
-        versionCode = 8
-        versionName = "1.3"
+        versionCode = 9
+        versionName = "1.4"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -53,10 +53,10 @@ dependencies {
     implementation("com.google.android.material:material:1.6.1")
 
     // ViewModel
-    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.1")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.0")
 
     // LiveData
-    implementation("androidx.lifecycle:lifecycle-livedata-core-ktx:2.4.1")
+    implementation("androidx.lifecycle:lifecycle-livedata-core-ktx:2.5.0")
 
     // Hilt
     kapt("com.google.dagger:hilt-android-compiler:2.42")
